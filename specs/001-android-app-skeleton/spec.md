@@ -28,7 +28,7 @@ and observing the placeholder screen. Delivers a verified application foundation
 **Acceptance Scenarios**:
 
 1. **Given** a clean checkout of the repository, **When** the standard build command is executed, **Then** an installable application package is produced without errors or manual fixes.
-2. **Given** the built application is installed on an Android emulator within the supported version window, **When** the application is launched, **Then** it opens and displays a placeholder screen within 5 seconds.
+2. **Given** the built application is installed on an Android emulator running Android 15 (API 35) or newer, **When** the application is launched, **Then** it opens and displays the placeholder screen showing the application name within 5 seconds.
 3. **Given** the application is running, **When** the system background is inspected, **Then** the application requests no permissions.
 
 ---
@@ -36,9 +36,9 @@ and observing the placeholder screen. Delivers a verified application foundation
 ### User Story 2 - One-Command Local Verification (Priority: P2)
 
 As a developer working in the isolated development VM, I can run the unit test
-suite and all linters locally with a single, documented command, so that every code
-change can be quality-gated without physical devices or network access to remote
-infrastructure.
+suite and all linters locally through exactly one documented verification entry
+point, so that every code change can be quality-gated without physical devices or
+network access to remote infrastructure.
 
 **Why this priority**: Local verification is the only quality signal available in the
 isolated development environment (Constitution Principle V); it must exist before CI
@@ -88,11 +88,11 @@ reports a clear pass/fail status. Delivers automated regression protection.
 ### Functional Requirements
 
 - **FR-001**: The project MUST produce an installable Android application package from a clean checkout using a single standard build command, with no manual steps.
-- **FR-002**: The application MUST launch and display a placeholder screen confirming the skeleton is operational.
-- **FR-003**: The application MUST declare a minimum supported Android version within the last 3–4 major Android releases and MUST NOT contain compatibility shims for older versions (Constitution Principle VI).
+- **FR-002**: The application MUST launch and display a placeholder screen — with the application name "Android Analyzer" visible on it — confirming the skeleton is operational.
+- **FR-003**: The application MUST declare Android 15 (API 35) as its minimum supported version — within the last 3–4 major Android releases per Constitution Principle VI — and MUST NOT contain compatibility shims for older versions.
 - **FR-004**: The project MUST include a runnable unit test suite covering the skeleton's verifiable logic, executable without physical devices or emulators.
 - **FR-005**: The project MUST include static analysis (linting) configured such that error-severity findings fail the verification.
-- **FR-006**: A single documented command MUST run build, unit tests, and linters together and report a consolidated pass/fail result suitable as a pre-delivery quality gate.
+- **FR-006**: The project MUST provide exactly one documented verification entry point — a single command that runs build, unit tests, and linters together and reports a consolidated pass/fail result suitable as a pre-delivery quality gate. The entry point's exact command name and shape are fixed during `/speckit-plan`; the spec governs its behavior, uniqueness, and documentation.
 - **FR-007**: The repository MUST contain a CI pipeline configuration that builds the application and runs the unit tests and linters on every push and pull request.
 - **FR-008**: The CI pipeline MUST produce a clear pass/fail status per commit and MUST NOT require access to physical devices, emulators, or private credentials.
 - **FR-009**: The application MUST request zero permissions at skeleton stage (Constitution Principle VIII).
@@ -112,8 +112,16 @@ introduced by future Analyzer features.*
 - **SC-002**: The full local verification (build + unit tests + linters) completes in under 10 minutes in the development VM.
 - **SC-003**: The CI pipeline completes within 15 minutes, including a cold run with no caches.
 - **SC-004**: 100% of build, test, and lint checks pass on a clean checkout with zero manual fixes.
-- **SC-005**: The application launches on an emulator within the supported version window and displays the placeholder screen in under 5 seconds.
+- **SC-005**: The application launches on an Android 15 (API 35) emulator and displays the placeholder screen in under 5 seconds.
 - **SC-006**: The application requests zero permissions and performs zero network or background activity at skeleton stage.
+
+## Clarifications
+
+### Session 2026-10-03
+
+- Q: Which minimum supported Android API level should the skeleton pin for FR-003's "last 3–4 major releases" window? → A: API 35 (Android 15).
+- Q: What must the placeholder screen display for FR-002 to be objectively verifiable? → A: The application name "Android Analyzer" as visible text.
+- Q: Must FR-006 name the exact verification command in the spec now, or does the spec require only that exactly one documented verification entry point exists? → A: The spec requires exactly one documented verification entry point (build + unit tests + linters + consolidated pass/fail); the exact command name is fixed in `/speckit-plan`.
 
 ## Assumptions
 
