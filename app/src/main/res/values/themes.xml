@@ -1,0 +1,10 @@
+<resources>
+    <!--
+      Minimal window theme for the single Activity. This is only the pre-Compose
+      window bridge; actual Material 3 theming happens in Compose (MaterialTheme
+      inside MainActivity.setContent). The parent is the platform Material theme —
+      no AppCompat bridge, no compat shims (U-3), and no Material Components XML
+      library dependency (Constitution VII minimal dependency set).
+    -->
+    <style name="Theme.AndroidAnalyzer" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

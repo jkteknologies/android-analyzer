@@ -33,3 +33,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Universal / OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
