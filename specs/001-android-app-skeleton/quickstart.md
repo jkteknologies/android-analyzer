@@ -12,7 +12,7 @@ companion to the verification contract ([contracts/verification.md](./contracts/
 | Requirement | Version / detail | Notes |
 |---|---|---|
 | JDK | **21 LTS** (Eclipse Temurin) | R-03; must be on `JAVA_HOME` |
-| Android SDK | cmdline-tools + **platform `android-35`** + platform-tools + **build-tools as requested by AGP** | R-12; build-tools version intentionally not pinned (R-02) |
+| Android SDK | cmdline-tools + **platform `android-37.0`** + platform-tools + **build-tools as requested by AGP** | R-12 (amended 2026-10-04: `compileSdk` is 37, so the compile platform — not android-35 — must be installed); build-tools version intentionally not pinned (R-02) |
 | `ANDROID_HOME` **or** `ANDROID_SDK_ROOT` | pointing at the SDK root (`platforms/`, `build-tools/` present) | Checked by `scripts/verify.sh` precheck |
 | OS | Linux (CI: `ubuntu-latest`) | POSIX shell for `verify.sh` |
 | Devices / emulators / accounts | **not required for build, tests, lint, or CI** | FR-004, FR-008 |
@@ -20,7 +20,8 @@ companion to the verification contract ([contracts/verification.md](./contracts/
 > **Environment note (2026-10-03):** the dev VM currently has **no `java`, no Android
 > SDK, no `gradle`** installed — all three must be installed before the first run
 > (R-14). One-time installs: Temurin 21 via package manager or Adoptium tarball;
-> Android cmdline-tools, then `sdkmanager "platforms;android-35" "platform-tools"`.
+> Android cmdline-tools, then `sdkmanager "platforms;android-37.0" "platform-tools"`
+> (compileSdk 37 — amended 2026-10-04, see research.md R-12).
 
 ## Setup
 

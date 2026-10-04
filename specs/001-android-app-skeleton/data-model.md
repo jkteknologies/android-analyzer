@@ -23,7 +23,7 @@ one authoritative reference; none of these are runtime data.
 | `applicationId` | `com.jkteknologies.androidanalyzer` (provisional) | research.md R-11 | Installable package identity (US1) |
 | `minSdk` | `35` | spec clarification 2026-10-03, R-12 | FR-003 minimum supported version |
 | `targetSdk` | `35` | R-12 | Runtime behavior pin |
-| `compileSdk` | `35` | R-12 | FR-003, no compat shims |
+| `compileSdk` | `37` *(amended 2026-10-04: the pinned 2026 library set — Compose BOM 2026.09.00, lifecycle 2.11.0, activity 1.13.0 — requires compiling against SDK 37; see research.md R-12 amendment)* | R-12 + convergence T023 | Build-time platform only; FR-003/no-compat-shims is governed by `minSdk` 35 |
 | `compileOptions` / Kotlin `jvmTarget` | `21` (JDK 21 LTS) | R-03 | Toolchain alignment |
 | `versionName` | `0.1.0` (provisional skeleton version) | convention | Display version only |
 | `versionCode` | `1` | convention | Install/upgrade bookkeeping |

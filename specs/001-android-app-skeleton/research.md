@@ -221,8 +221,9 @@ placeholder UI text remains exactly "Android Analyzer" (FR-002, clarification
 **Decision**: `minSdk = targetSdk = compileSdk = 35` (Android 15), per spec
 clarification 2026-10-03. **Build-tools**: not explicitly pinned — AGP 9.4.x selects its
 default build-tools automatically; install the SDK packages AGP requests when
- bootstrapping (README documents: platform `android-35`, platform-tools, and the
-build-tools AGP requests).
+ bootstrapping (README documents: platform `android-35` — *superseded 2026-10-04,
+ install `android-37.0` per the amendment below* — platform-tools, and the
+ build-tools AGP requests).
 
 **Rationale**: API 35 is the clarified floor; equal min/target/compile maximizes the
 "no compat shims" property (FR-003) — no `appcompat`, no multiplatform desugaring, no
@@ -232,6 +233,15 @@ expectations.
 **Alternatives considered**:
 - *minSdk < 35 with support libraries* — directly violates FR-003 and Constitution VI.
 - *compileSdk 36* — beyond the clarified API pin; rejected.
+
+**Amendment (2026-10-04, convergence T023)**: at implementation time the pinned library
+set (Compose BOM `2026.09.00` → Compose 1.12.x, lifecycle `2.11.0`, activity `1.13.0`) was
+found to require compiling against SDK 37, so `compileSdk` is **37** in
+`app/build.gradle.kts`. `minSdk = targetSdk = 35` are unchanged — FR-003's API-35 contract
+is intact. The clean-machine SDK prerequisite is therefore `platforms;android-37.0`
+(README.md and the `scripts/verify.sh` precheck message already state this). The decision
+text and alternatives above are retained as the historical record; the
+"compileSdk 36 — rejected" alternative is superseded by this recorded deviation.
 
 ## R-13: CI environment
 
@@ -284,5 +294,5 @@ documented prerequisite (FR-011, R-03), not a network problem.
 | activity-compose | 1.13.0 | Google Maven metadata (ts 2026-09-23) |
 | lifecycle-runtime-ktx | 2.11.0 | Google Maven metadata (ts 2026-09-23) |
 | JUnit | 4.13.2 | Maven Central |
-| SDK levels | min=target=compile=35 | spec clarification 2026-10-03 |
+| SDK levels | min=target=35, compile=37 (amended 2026-10-04) | spec clarification 2026-10-03; convergence T023 (see R-12 amendment) |
 | build-tools | AGP default (not pinned) | AGP 9.4.x behavior |

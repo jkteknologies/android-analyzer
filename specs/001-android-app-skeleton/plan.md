@@ -14,6 +14,7 @@ Deliver a minimal, launchable Android app ("Android Analyzer") that builds from 
 
 **Primary Dependencies** (each justified per Constitution VII — minimal set, rationale in research.md):
 - `androidx.activity:activity-compose` + Compose UI/Foundation/Material3 (Compose BOM) + `androidx.lifecycle` — required to render the placeholder UI on the modern stack Constitution VI mandates; a single-Activity Compose screen has no lighter alternative.
+- `org.jetbrains.kotlin.plugin.compose` `2.4.20` (Compose compiler Gradle plugin) — *[amended 2026-10-04, convergence T022]* required to compile `@Composable` code with Kotlin 2.0+ under AGP 9.x built-in Kotlin (R-01/R-04); version-matched to the Kotlin compiler AGP 9.4.1 embeds. Build-time only: no runtime code, no APK payload, no transitive libraries. The exclusion of a standalone `org.jetbrains.kotlin.android` plugin (R-01, task T003's "AGP only") is unaffected — that is a different plugin and stays excluded.
 - JUnit 4 (AGP default unit-test engine) — required by US2/FR-004 device-free tests; minimal choice, already on the unit-test classpath.
 - Android Lint (built into AGP) — the linter for FR-005; no third-party linter needed.
 - Explicitly excluded: networking, serialization, DI, image loading, Coroutines, appcompat/support libraries (FR-003 forbids backports), any analytics/ads/tracking (Constitution VIII).
@@ -22,7 +23,7 @@ Deliver a minimal, launchable Android app ("Android Analyzer") that builds from 
 
 **Testing**: JUnit unit tests on the local JVM via the Gradle `test` source set — no device or emulator (FR-004, Constitution IV). Instrumented tests are out of scope (spec assumption). Test or lint failures exit non-zero and name the failing test / file+rule (US2, FR-005).
 
-**Target Platform**: Android 15 (API 35) and newer. `minSdk = targetSdk = compileSdk = 35`; no support libraries, no compat shims (FR-003, Constitution VI).
+**Target Platform**: Android 15 (API 35) and newer. `minSdk = targetSdk = 35`; no support libraries, no compat shims (FR-003, Constitution VI). *[Amended 2026-10-04, convergence T023: `compileSdk = 37`, not 35 — the pinned 2026 library set (Compose BOM `2026.09.00`, lifecycle `2.11.0`, activity `1.13.0`) requires compiling against SDK 37. This changes the build-time platform only; the user-facing API-35 contract — `minSdk = targetSdk = 35`, installs and runs on Android 15+ — is unchanged (FR-003 intact). Clean-machine prerequisite is therefore `platforms;android-37.0`; see the research.md R-12 amendment, data-model.md S-1, and README.md.]*
 
 **Project Type**: mobile-app — a single Gradle module `app` (no multi-module split: one screen, no shared logic to modularize).
 
@@ -91,6 +92,7 @@ app/
             └── PlaceholderScreenTest.kt    # Device-free JUnit tests (US2, FR-004)
 
 build.gradle.kts                    # Root project: plugin aliases from the version catalog
+gradle.properties                   # Daemon heap 2g — prevents D8/R8 OOM on clean builds (T026)
 settings.gradle.kts                 # Repositories + `:app` module registration
 gradle/
 ├── libs.versions.toml              # Version catalog: single source of truth for pinned versions
@@ -121,3 +123,15 @@ No violations — table intentionally empty.
 *Re-evaluated after Phase 1 design artifacts (research.md, data-model.md, contracts/, quickstart.md) were produced.*
 
 All nine principles remain ✅ PASS. The design introduced no new dependencies, no permissions, no devices/emulators, no VM-side pushes, and no multi-module or abstraction-layer complexity. Verification remains one entry point (`scripts/verify.sh`) and CI remains a single workflow with no device or credential needs. **Gate still passes; Complexity Tracking stays empty.**
+
+---
+
+## Post-Implementation Amendments (Convergence, 2026-10-04)
+
+Implementation-time decisions that deviate from the original plan text, recorded here with rationale per the Constitution Development Workflow (steps 3/5) and convergence tasks T022–T026. The Constitution Check above is unaffected — all nine principles still pass with these amendments in force.
+
+1. **Compose compiler Gradle plugin (T022, Constitution VII)** — `org.jetbrains.kotlin.plugin.compose` `2.4.20` is applied (root + `:app`) and pinned in `gradle/libs.versions.toml`. AGP 9.x's built-in Kotlin (R-01) removes the standalone `org.jetbrains.kotlin.android` plugin but still requires the Compose compiler plugin whenever Compose is enabled with Kotlin 2.0+; its version must match the Kotlin compiler AGP embeds (`2.4.20`, R-04). Build-time only — no runtime code, no APK payload, no new transitive libraries. Also recorded inline in Technical Context > Primary Dependencies.
+2. **`compileSdk = 37` (T023)** — the pinned 2026 library set (Compose BOM `2026.09.00`, lifecycle `2.11.0`, activity `1.13.0`) requires compiling against SDK 37; `minSdk = targetSdk = 35` are unchanged, so FR-003's user-facing API-35 contract is intact. Recorded inline in Target Platform above; research.md R-12 carries the amendment, and data-model.md S-1 plus quickstart.md prerequisites were aligned to `platforms;android-37.0` (README.md and the `scripts/verify.sh` precheck message already stated it). CI relies on the GitHub-hosted runner's preinstalled SDK (R-13) providing the compile platform; if a runner image ever lags behind SDK 37, add an explicit sdkmanager step to `ci.yml`.
+3. **`themes.xml` window-theme parent (T024)** — the Activity theme parents from the platform `android:Theme.Material.Light.NoActionBar`, not a literal `Theme.Material3` style: that parent lives in `com.google.android.material` (Material Components), which the minimal-dependency set excludes (Constitution VII). Material 3 theming happens in Compose (`MaterialTheme` in `MainActivity`); the XML theme is only the pre-Compose window bridge. Supersedes the parenthetical "(`Theme.Material3`)" in task T009.
+4. **Manifest permission merge-strip (T025)** — `app/src/main/AndroidManifest.xml` carries two `tools:node="remove"` directives (`<uses-permission>` and `<permission>` for `${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`) that strip the permission `androidx.core` (transitive via activity-compose) injects through manifest merging. This is the sanctioned mechanism upholding data-model.md S-2's zero-permission contract: the merged APK requests nothing (verified — `aapt2 dump permissions` on `app-debug.apk` is empty, task T018). S-2's "zero `<uses-permission>` elements" is understood as zero *requested* permissions in the merged result.
+5. **Root `gradle.properties` (T026)** — `org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m`. The Gradle default 512m daemon heap triggers a D8/R8 OutOfMemoryError while dexing the Compose debug APK on clean builds (8 GB dev VM); 2g is the Android-recommended baseline. Build infrastructure only — no app behavior. Added to the Project Structure inventory above.
