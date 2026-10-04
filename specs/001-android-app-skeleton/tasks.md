@@ -19,10 +19,10 @@
 
 ## Phase 1: Setup (Project Skeleton)
 
-- [ ] T001 [P] Create `settings.gradle.kts` with plugin/repositories management: declare `google()`, `mavenCentral()`, and `gradlePluginPortal()` repositories (dependencyResolutionManagement + pluginManagement) and register the single `:app` module
-- [ ] T002 [P] Create `gradle/libs.versions.toml` version catalog as the single source of truth with exact pinned versions from research.md: AGP `9.4.1` (built-in Kotlin — no standalone kotlin-android plugin alias), Kotlin stdlib `2.4.20`, Compose BOM `2026.09.00`, activity-compose `1.13.0`, lifecycle-runtime-ktx `2.11.0`, JUnit `4.13.2`
-- [ ] T003 Create root `build.gradle.kts` declaring the plugin aliases from the version catalog with `apply false` (AGP only; no standalone Kotlin plugin per R-01)
-- [ ] T004 Generate the Gradle wrapper pinned to distribution `gradle-9.8.0-bin.zip`: create `gradle/wrapper/gradle-wrapper.properties` + `gradle/wrapper/gradle-wrapper.jar`, plus `gradlew` (with executable bit) and `gradlew.bat` per plan.md project structure
+- [x] T001 [P] Create `settings.gradle.kts` with plugin/repositories management: declare `google()`, `mavenCentral()`, and `gradlePluginPortal()` repositories (dependencyResolutionManagement + pluginManagement) and register the single `:app` module
+- [x] T002 [P] Create `gradle/libs.versions.toml` version catalog as the single source of truth with exact pinned versions from research.md: AGP `9.4.1` (built-in Kotlin — no standalone kotlin-android plugin alias), Kotlin stdlib `2.4.20`, Compose BOM `2026.09.00`, activity-compose `1.13.0`, lifecycle-runtime-ktx `2.11.0`, JUnit `4.13.2`
+- [x] T003 Create root `build.gradle.kts` declaring the plugin aliases from the version catalog with `apply false` (AGP only; no standalone Kotlin plugin per R-01)
+- [x] T004 Generate the Gradle wrapper pinned to distribution `gradle-9.8.0-bin.zip`: create `gradle/wrapper/gradle-wrapper.properties` + `gradle/wrapper/gradle-wrapper.jar`, plus `gradlew` (with executable bit) and `gradlew.bat` per plan.md project structure
 
 **Checkpoint**: Gradle project skeleton resolves; wrapper downloads Gradle 9.8.0 on first run.
 
@@ -32,9 +32,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete — the app module, manifest, and build configuration are prerequisites for ALL stories.
 
-- [ ] T005 Create `app/build.gradle.kts` implementing data-model.md S-1 exactly: `applicationId = "com.jkteknologies.androidanalyzer"`, `minSdk = 35`, `targetSdk = 35`, `compileSdk = 35`, `versionCode = 1`, `versionName = "0.1.0"`, `compileOptions` source/target compatibility `21` and Kotlin `jvmTarget = "21"`; enable Compose build features; compose platform from Compose BOM `2026.09.00`; dependencies ONLY: `androidx.activity:activity-compose:1.13.0`, `androidx.lifecycle:lifecycle-runtime-ktx:2.11.0`, Compose UI/foundation/material3 via BOM, `testImplementation junit:junit:4.13.2` (no networking, no DI, no Coroutines, no appcompat — Constitution VII); configure built-in AGP lint with errors fatal and warnings never failing the build (R-09; no lint.xml, no custom rules, no `abortOnError=false`)
-- [ ] T006 [P] Create `app/proguard-rules.pro` with placeholder header comments only (no custom rules required for this feature)
-- [ ] T007 Create `app/src/main/AndroidManifest.xml` implementing data-model.md S-2: **zero** `<uses-permission>` elements, exactly **one** `<activity>` — `MainActivity` in package `com.jkteknologies.androidanalyzer`, `android:exported="true"`, `android:label="@string/app_name"`, with the single launcher intent filter (`MAIN` action + `LAUNCHER` category); no other components
+- [x] T005 Create `app/build.gradle.kts` implementing data-model.md S-1 exactly: `applicationId = "com.jkteknologies.androidanalyzer"`, `minSdk = 35`, `targetSdk = 35`, `compileSdk = 35`, `versionCode = 1`, `versionName = "0.1.0"`, `compileOptions` source/target compatibility `21` and Kotlin `jvmTarget = "21"`; enable Compose build features; compose platform from Compose BOM `2026.09.00`; dependencies ONLY: `androidx.activity:activity-compose:1.13.0`, `androidx.lifecycle:lifecycle-runtime-ktx:2.11.0`, Compose UI/foundation/material3 via BOM, `testImplementation junit:junit:4.13.2` (no networking, no DI, no Coroutines, no appcompat — Constitution VII); configure built-in AGP lint with errors fatal and warnings never failing the build (R-09; no lint.xml, no custom rules, no `abortOnError=false`)
+- [x] T006 [P] Create `app/proguard-rules.pro` with placeholder header comments only (no custom rules required for this feature)
+- [x] T007 Create `app/src/main/AndroidManifest.xml` implementing data-model.md S-2: **zero** `<uses-permission>` elements, exactly **one** `<activity>` — `MainActivity` in package `com.jkteknologies.androidanalyzer`, `android:exported="true"`, `android:label="@string/app_name"`, with the single launcher intent filter (`MAIN` action + `LAUNCHER` category); no other components
 
 **Checkpoint**: Foundation ready — user story implementation can now begin in parallel.
 
@@ -48,11 +48,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Create `app/src/main/res/values/strings.xml` defining `app_name` = "Android Analyzer" (sole string resource; U-1 text must come from this resource)
-- [ ] T009 [P] [US1] Create `app/src/main/res/values/themes.xml` with a minimal Material 3 (`Theme.Material3`) theme — no AppCompat bridge, no compat shims (U-3: pure androidx/Compose stack on API 35)
-- [ ] T010 [P] [US1] Create adaptive launcher icon XML under `app/src/main/res/mipmap-anydpi-v26/` (foreground/background drawables as needed; manifest icon reference resolves)
-- [ ] T011 [US1] Create `app/src/main/java/com/jkteknologies/androidanalyzer/ui/PlaceholderScreen.kt`: a stateless, parameter-free `@Composable` that renders a Material 3 `Surface` filling the entire screen and centers `Text(stringResource(R.string.app_name))` — satisfies U-1 (exact text "Android Analyzer"), U-5 (no network/background work), U-6 (identical output on rotation/process death because there is no state)
-- [ ] T012 [US1] Create `app/src/main/java/com/jkteknologies/androidanalyzer/MainActivity.kt`: the sole Activity (matching the manifest entry from T007 — exported, launcher intent), whose `onCreate` calls `setContent {}` → Material theme → `PlaceholderScreen()`; no ViewModel, no saved-instance-state handling, no side effects — satisfies U-2 (cold start ≤5 s) and U-3 (targets SDK 35 with no compat shims)
+- [x] T008 [P] [US1] Create `app/src/main/res/values/strings.xml` defining `app_name` = "Android Analyzer" (sole string resource; U-1 text must come from this resource)
+- [x] T009 [P] [US1] Create `app/src/main/res/values/themes.xml` with a minimal Material 3 (`Theme.Material3`) theme — no AppCompat bridge, no compat shims (U-3: pure androidx/Compose stack on API 35)
+- [x] T010 [P] [US1] Create adaptive launcher icon XML under `app/src/main/res/mipmap-anydpi-v26/` (foreground/background drawables as needed; manifest icon reference resolves)
+- [x] T011 [US1] Create `app/src/main/java/com/jkteknologies/androidanalyzer/ui/PlaceholderScreen.kt`: a stateless, parameter-free `@Composable` that renders a Material 3 `Surface` filling the entire screen and centers `Text(stringResource(R.string.app_name))` — satisfies U-1 (exact text "Android Analyzer"), U-5 (no network/background work), U-6 (identical output on rotation/process death because there is no state)
+- [x] T012 [US1] Create `app/src/main/java/com/jkteknologies/androidanalyzer/MainActivity.kt`: the sole Activity (matching the manifest entry from T007 — exported, launcher intent), whose `onCreate` calls `setContent {}` → Material theme → `PlaceholderScreen()`; no ViewModel, no saved-instance-state handling, no side effects — satisfies U-2 (cold start ≤5 s) and U-3 (targets SDK 35 with no compat shims)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently — `./gradlew build` succeeds and the app installs, launches, and shows "Android Analyzer".
 
@@ -66,12 +66,12 @@
 
 ### Tests for User Story 2 (REQUIRED per FR-004 — not optional)
 
-- [ ] T013 [P] [US2] Create `app/src/test/java/com/jkteknologies/androidanalyzer/PlaceholderScreenTest.kt`: JUnit 4 test class (JUnit `4.13.2` via `testImplementation`, plain kotlin-test/JUnit assertions) with at least one test; per data-model.md S-4, tests may verify only string-resource constants and pure helper functions — **no UI rendering assertions, no Robolectric, no instrumentation, and no `android.*` framework classes** (JVM stubs throw RuntimeException); a failing test must surface class + method name through `testDebugUnitTest`
+- [x] T013 [P] [US2] Create `app/src/test/java/com/jkteknologies/androidanalyzer/PlaceholderScreenTest.kt`: JUnit 4 test class (JUnit `4.13.2` via `testImplementation`, plain kotlin-test/JUnit assertions) with at least one test; per data-model.md S-4, tests may verify only string-resource constants and pure helper functions — **no UI rendering assertions, no Robolectric, no instrumentation, and no `android.*` framework classes** (JVM stubs throw RuntimeException); a failing test must surface class + method name through `testDebugUnitTest`
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Create `scripts/verify.sh` (POSIX `sh`, `set -euo pipefail`, executable bit, no arguments) implementing contracts/verification.md exactly: (1) precheck — validate `JAVA_HOME` → `$JAVA_HOME/bin/java` is JDK 21 and `ANDROID_HOME` or `ANDROID_SDK_ROOT` points to an SDK containing `platforms/` + `build-tools/`, on failure print an actionable message naming the missing variable, what to install, and a pointer to README, then exit 1; (2) run the fixed check set in exact order: `./gradlew build testDebugUnitTest lint`; (3) print consolidated output — on success exactly `PASS: build, testDebugUnitTest, lint`; on failure name the first failing check, the Gradle task, and the detail (test class/method for test failures, `file>: issue-id>` for lint errors); (4) exit 0 on success, 1 on failure; warnings never affect the exit code
-- [ ] T015 [P] [US2] Document verification in `README.md`: the exact command `./scripts/verify.sh`, prerequisites (JDK 21 on `JAVA_HOME`; Android SDK with `platforms;android-35`, platform-tools, AGP-selected build-tools on `ANDROID_HOME`/`ANDROID_SDK_ROOT`), expected success/failure output, and report file locations (`app/build/reports/tests/`, `app/build/reports/lint-results.txt`) — satisfies FR-011 and the verification.md contract
+- [x] T014 [P] [US2] Create `scripts/verify.sh` (POSIX `sh`, `set -euo pipefail`, executable bit, no arguments) implementing contracts/verification.md exactly: (1) precheck — validate `JAVA_HOME` → `$JAVA_HOME/bin/java` is JDK 21 and `ANDROID_HOME` or `ANDROID_SDK_ROOT` points to an SDK containing `platforms/` + `build-tools/`, on failure print an actionable message naming the missing variable, what to install, and a pointer to README, then exit 1; (2) run the fixed check set in exact order: `./gradlew build testDebugUnitTest lint`; (3) print consolidated output — on success exactly `PASS: build, testDebugUnitTest, lint`; on failure name the first failing check, the Gradle task, and the detail (test class/method for test failures, `file>: issue-id>` for lint errors); (4) exit 0 on success, 1 on failure; warnings never affect the exit code
+- [x] T015 [P] [US2] Document verification in `README.md`: the exact command `./scripts/verify.sh`, prerequisites (JDK 21 on `JAVA_HOME`; Android SDK with `platforms;android-35`, platform-tools, AGP-selected build-tools on `ANDROID_HOME`/`ANDROID_SDK_ROOT`), expected success/failure output, and report file locations (`app/build/reports/tests/`, `app/build/reports/lint-results.txt`) — satisfies FR-011 and the verification.md contract
 
 **Checkpoint**: At this point, User Story 2 should be fully functional and testable independently — running `./scripts/verify.sh` on a clean checkout produces a clear pass, and an intentionally broken test/lint produces a named failure.
 
@@ -85,7 +85,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] Create `.github/workflows/ci.yml` implementing research.md R-13: trigger on every `push` and every `pull_request`; run on `ubuntu-latest`; set up JDK 21 Temurin via `actions/setup-java`; enable dependency caching via `gradle/actions/setup-gradle`; job steps execute `./gradlew build testDebugUnitTest lint` **directly** (CI must NOT invoke `scripts/verify.sh` per contracts/verification.md); rely on the GitHub-hosted preinstalled Android SDK (no sdkmanager step); no emulator, no devices, no credentials/secrets (FR-008); keep cold-run time within SC-003 (≤15 min)
+- [x] T016 [US3] Create `.github/workflows/ci.yml` implementing research.md R-13: trigger on every `push` and every `pull_request`; run on `ubuntu-latest`; set up JDK 21 Temurin via `actions/setup-java`; enable dependency caching via `gradle/actions/setup-gradle`; job steps execute `./gradlew build testDebugUnitTest lint` **directly** (CI must NOT invoke `scripts/verify.sh` per contracts/verification.md); rely on the GitHub-hosted preinstalled Android SDK (no sdkmanager step); no emulator, no devices, no credentials/secrets (FR-008); keep cold-run time within SC-003 (≤15 min)
 
 **Checkpoint**: At this point, User Story 3 should be fully functional and testable independently — a PR shows a green check with build + test + lint status, and a deliberately broken change shows a red check naming the failure.
 
@@ -93,11 +93,11 @@
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T017 [P] Run `./scripts/verify.sh` end-to-end on a clean checkout and confirm the consolidated `PASS: build, testDebugUnitTest, lint` output within SC-002 (≤10 min) — full US2 acceptance pass
-- [ ] T018 [P] Permission audit: build the debug APK and run `aapt2 dump permissions` on it; output MUST be empty (U-4, data-model.md S-2, Constitution VIII — zero unjustified permissions)
-- [ ] T019 [P] Offline audit: after the first warm run, confirm `./gradlew build --offline` succeeds (SC-006, FR-009, FR-010 — no network/background at build or runtime; research.md R-14)
-- [ ] T020 [P] Budget checks: time `./gradlew build` clean (SC-001 ≤5 min) and review CI cold-run duration for SC-003 (≤15 min); document actuals if useful
-- [ ] T021 Finalize `README.md` against quickstart.md: prerequisites including the one-time dev-VM installs (Temurin 21; cmdline-tools + `sdkmanager "platforms;android-35" "platform-tools"`), expected first-run Gradle downloads (R-14), CI badge + CI behavior summary, the optional manual launch check, and the Expected Outcomes table (FR-011)
+- [x] T017 [P] Run `./scripts/verify.sh` end-to-end on a clean checkout and confirm the consolidated `PASS: build, testDebugUnitTest, lint` output within SC-002 (≤10 min) — full US2 acceptance pass
+- [x] T018 [P] Permission audit: build the debug APK and run `aapt2 dump permissions` on it; output MUST be empty (U-4, data-model.md S-2, Constitution VIII — zero unjustified permissions)
+- [x] T019 [P] Offline audit: after the first warm run, confirm `./gradlew build --offline` succeeds (SC-006, FR-009, FR-010 — no network/background at build or runtime; research.md R-14)
+- [x] T020 [P] Budget checks: time `./gradlew build` clean (SC-001 ≤5 min) and review CI cold-run duration for SC-003 (≤15 min); document actuals if useful
+- [x] T021 Finalize `README.md` against quickstart.md: prerequisites including the one-time dev-VM installs (Temurin 21; cmdline-tools + `sdkmanager "platforms;android-35" "platform-tools"`), expected first-run Gradle downloads (R-14), CI badge + CI behavior summary, the optional manual launch check, and the Expected Outcomes table (FR-011)
 
 ---
 

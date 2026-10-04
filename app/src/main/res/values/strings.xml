@@ -1,0 +1,4 @@
+<resources>
+    <!-- Sole string resource; the placeholder screen reads its text from here (U-1, FR-002). -->
+    <string name="app_name">Android Analyzer</string>
+</resources>

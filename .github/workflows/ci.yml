@@ -1,0 +1,31 @@
+# CI pipeline (US3, FR-007/FR-008, research.md R-13).
+# Runs the same fixed check set as scripts/verify.sh — but DIRECTLY via Gradle;
+# it intentionally does not invoke verify.sh (contracts/verification.md).
+# No emulator, no devices, no credentials or secrets.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test-lint:
+    name: Build, unit tests, lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle with dependency caching
+        uses: gradle/actions/setup-gradle@v4
+
+      # Relies on the GitHub-hosted runner's preinstalled Android SDK
+      # (ANDROID_HOME is set by the runner image); no sdkmanager step.
+      - name: Build, unit tests, lint
+        run: ./gradlew build testDebugUnitTest lint
