@@ -208,3 +208,9 @@ Task: "T012 Formatting in MAIN/ui/home/FigureFormatting.kt"
 - Every code-generating task ends with its story's `./scripts/verify.sh` gate — no code is presented before tests + lint pass (Constitution V)
 - Zero new dependencies (R-16): any perceived need for a library is a design question — escalate to plan.md, do not add silently (Constitution VII)
 - The single new permission `QUERY_ALL_PACKAGES` is pre-justified (R-01); any additional permission is a Constitution VIII violation
+
+---
+
+## Phase 8: Convergence
+
+- [ ] T032 Run the full quickstart manual validation M-1..M-8 (figures vs `adb` ground truth, app counts, placeholder behavior, system theme following, footer navigation incl. rapid taps + back gesture, theme setting immediacy/persistence, font_scale 2.0 walkthrough with revert, TalkBack sweep) on an Android 15+ device or emulator via the debug APK, record per-scenario pass/fail, and fix any code findings in `HomeScreen.kt`, `AnalyzerApp.kt`, `SettingsScreen.kt` per SC-001..SC-005 + quickstart.md §2–3 (partial — code complete and gates green; on-device acceptance unverified because the dev VM has no Android 15+ device/KVM-reliable emulator; sideload path per quickstart §0)
