@@ -107,6 +107,7 @@ observing the persisted selection. Delivers user-controlled appearance.
 - What happens when the device's theme changes while the application is open (system default mode)? The application follows without restart; if it was in the background, the correct theme is present on the next resume.
 - What happens when the user rapidly switches between the home and settings screens, or between theme options? No crash, no flickering intermediate states, and the final presented screen and theme are consistent with the last user action.
 - What happens on a device with a very large number of installed applications? Counts display in full with locale-appropriate number formatting.
+- What happens when the system's largest font scale (accessibility setting) is active? All figures, the footer, and the settings screen remain readable without clipped or overlapping content (FR-015).
 - What does the settings screen show besides the theme? Nothing — it contains exactly the theme setting; no placeholder or "coming soon" sections.
 
 ## Requirements *(mandatory)*
@@ -117,20 +118,22 @@ observing the persisted selection. Delivers user-controlled appearance.
 - **FR-002**: Paired figures (memory available + allocated; storage free + used) MUST be derived from a single reading of device state, MUST NOT together exceed the respective device total, and MUST NOT be negative.
 - **FR-003**: The resource overview MUST cover exactly four resource kinds — device memory, internal storage, battery, and processor core count. CPU utilization and per-core detail, external/removable storage, and battery health metrics beyond level and charging state are out of scope for this feature.
 - **FR-004**: The home screen MUST display the count of installed non-system applications followed, in brackets, by the total count of applications including system applications.
-- **FR-005**: The application MUST distinguish system applications from non-system applications without any user action or manual input.
+- **FR-005**: The application MUST distinguish system applications from non-system applications without any user action or manual input. An application that was preinstalled on the device MUST remain classified as a system application even if the user has updated it.
 - **FR-006**: By default, the application MUST follow the device's current system theme (dark or light) with no user configuration.
 - **FR-007**: The application MUST present a persistent footer containing exactly two buttons — "Home screen" positioned on the left and "Settings" positioned on the right — on every screen of this feature.
 - **FR-008**: The footer MUST visually indicate which screen is currently presented.
 - **FR-009**: The settings screen MUST contain exactly one setting — theme — offering exactly three options: light, dark, and system default, with system default as the initial value.
 - **FR-010**: A theme selection MUST take effect immediately across the application and MUST persist across application restarts.
-- **FR-011**: Resource and application figures MUST be read on demand when the home screen is presented; this feature MUST NOT introduce background monitoring, periodic polling, or network activity (Constitution Principles VIII–IX).
+- **FR-011**: Resource and application figures MUST be read on demand every time the home screen is presented to the user — on application launch, on return to the home screen via in-app navigation, and on resume from the background; reads occur only while the home screen is visible. This feature MUST NOT introduce background monitoring, periodic polling, or network activity (Constitution Principles VIII–IX).
 - **FR-012**: When a figure cannot be read, the home screen MUST show a distinct unavailability indication for that figure instead of an invented value, and MUST NOT crash.
 - **FR-013**: This feature MUST NOT add any permission to the application unless strictly required to enumerate installed applications; any such permission MUST be justified in the feature plan (Constitution Principle VIII).
+- **FR-014**: While a figure is being read, the home screen MUST display a neutral per-figure placeholder; each placeholder MUST be replaced by the figure's value — or by its unavailability indication (FR-012) — once that read completes. The home screen layout MUST render without waiting for any read to finish.
+- **FR-015**: Every figure, footer button, and theme option MUST be operable and understandable via the platform's screen reader — figures expose name-and-value semantics, and the unavailability indication is announced distinctly from a value. All screens of this feature MUST remain free of clipped or overlapping content at the system's largest font scale.
 
 ### Key Entities
 
 - **ResourceSummary**: A snapshot of device resource state at one point in time, covering device memory (available, allocated, total), internal storage (free, used, total), battery (level, charging state), and processor (core count).
-- **ApplicationInventory**: A count of installed applications split into non-system count and total count (system count is the difference).
+- **ApplicationInventory**: A count of installed applications split into non-system count and total count (system count is the difference). Applications preinstalled on the device — including those the user has since updated — belong to the system count.
 - **ThemePreference**: The user's persisted theme choice — one of light, dark, or system default — stored locally on the device.
 
 ## Success Criteria *(mandatory)*
@@ -148,8 +151,9 @@ observing the persisted selection. Delivers user-controlled appearance.
 
 - **Resource scope (resolved)**: "Resources" covers device memory (RAM: available, allocated, total), internal storage (free, used, total), battery (level and charging state as reported by the device), and processor core count. CPU utilization, external storage, and battery health metrics are excluded (FR-003).
 - **Allocated meaning**: "Allocated" is device-wide usage by the system plus all applications, not this application's own usage; storage "used" covers the internal storage consumed by the system, applications, and user data.
+- **System-app classification (resolved)**: An application preinstalled on the device counts as a system application even if the user has updated it; only applications the user installed themselves count as non-system (FR-005).
 - **Battery verification**: Emulators report a simulated battery; verification compares displayed values against the device-reported ones, and FR-012's unavailability indication applies where a figure is not reported at all.
-- **Snapshot behavior**: All figures are read once when the home screen is presented; continuous live updating and manual refresh controls are out of scope for this feature.
+- **Snapshot behavior (resolved)**: All figures are read as a fresh one-shot snapshot each time the home screen is presented — on launch, on in-app return, and on resume from the background; continuous live updating and manual refresh controls are out of scope for this feature.
 - **Formatting**: Human-readable units with locale-aware number formatting; user-interface strings are English at this stage.
 - **Theme naming**: The three options are presented as Light ("white"), Dark, and System default ("system theme"); system default is the out-of-the-box value.
 - **Footer scope**: The footer is present on both the home screen and the settings screen.
@@ -162,3 +166,10 @@ observing the persisted selection. Delivers user-controlled appearance.
 ### Session 2026-10-04
 
 - Q: Which resources does "amount of resources available on a device" cover — device memory only, memory plus internal storage, or a broader set? → A: **Broad overview** — device memory (available/allocated), internal storage (free/used), battery (level and charging state), and processor core count.
+
+### Session 2026-10-05
+
+- Q: When a preinstalled system app has been updated by the user (e.g., via a store), how should it be counted in the non-system vs. system application split? → A: **Count as system** — updated system applications remain system applications; the non-system count covers only user-installed applications.
+- Q: While the home screen figures are still being read at launch, what should be displayed in place of each figure? → A: **Per-figure placeholder** — each figure shows a neutral placeholder that is replaced by its value (or its unavailability indication) as soon as its read completes; the screen is never blocked.
+- Q: When the app returns to the foreground from the background, should the home screen figures be read again? → A: **Refresh on every view** — fresh one-shot reads on launch, on in-app return, and on resume from the background; no background work or polling.
+- Q: Should basic accessibility support be in scope for this feature's screens? → A: **Include basics now** — screen-reader semantics for every figure, footer button, and theme option, plus correct layout at the system's largest font scale (FR-015).
