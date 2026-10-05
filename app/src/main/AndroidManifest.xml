@@ -3,11 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--
-      Zero <uses-permission> elements (FR-009): the skeleton requests nothing.
+      Sole permission added by feature 002 (FR-013/FR-004, research.md R-01,
+      Constitution VIII): the Applications figure requires the TOTAL installed-app
+      count, and since API 30 no <queries> subset can enumerate all packages —
+      only QUERY_ALL_PACKAGES can. Install-time normal permission; the app's
+      F-Droid distribution target makes Play's restriction of this permission N/A.
+    -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <!--
       The two remove directives below strip the app-defined
       DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION that androidx.core injects through
-      manifest merging — this app registers no receivers, so the permission
-      surface must stay completely empty (U-4, data-model S-2, Constitution VIII).
+      manifest merging — this app registers no receivers, so that permission
+      must stay out of the merged surface (feature 001, Constitution VIII).
     -->
     <uses-permission
         android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"

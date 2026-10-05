@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
-import com.jkteknologies.androidanalyzer.ui.PlaceholderScreen
+import androidx.compose.runtime.remember
+import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
+import com.jkteknologies.androidanalyzer.ui.home.HomeScreen
+import com.jkteknologies.androidanalyzer.ui.home.HomeStateHolder
 
 /**
- * Sole Activity (matches the single manifest component, T007): exported with the
- * launcher intent filter. Does nothing but host the placeholder screen — no
- * ViewModel, no saved-instance state, no side effects (U-2, U-3).
+ * Sole Activity (single manifest component): hosts the home screen and owns
+ * its state holder + platform readers (task T015). A bare [MaterialTheme]
+ * stands in until US2's `AppTheme` lands (T020). Read cycles are triggered
+ * inside [HomeScreen] per FR-011 (launch, in-app return, background resume).
  */
 class MainActivity : ComponentActivity() {
 
@@ -17,7 +21,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                PlaceholderScreen()
+                val holder = remember {
+                    val readers = AndroidDeviceReaders(this@MainActivity)
+                    HomeStateHolder(
+                        memoryReader = readers.memoryReader,
+                        storageReader = readers.storageReader,
+                        batteryReader = readers.batteryReader,
+                        coreCountReader = readers.coreCountReader,
+                        applicationCounter = readers.applicationCounter,
+                        poster = HomeStateHolder.mainThreadPoster(),
+                    )
+                }
+                HomeScreen(holder)
             }
         }
     }
