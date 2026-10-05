@@ -106,10 +106,10 @@ Single-module Android app (plan.md Project Structure). Abbreviations used throug
 
 **Independent Test**: Tap each footer button from each screen and observe the presented screen and the footer indication; rapid alternating taps stay consistent (quickstart M-5, ui-contracts U-1..U-6). Integrates US1's `HomeScreen` and US2's `AppTheme`; the settings surface itself is a title-only shell here (its single setting arrives in US4 — no placeholder text, edge case S-1).
 
-- [ ] T022 [US3] Implement the app shell in `MAIN/ui/AnalyzerApp.kt`: `Destination` enum (`HOME` initial, `SETTINGS`) held in a `mutableStateOf` (R-08, data-model §5); Scaffold with a persistent footer on every screen containing exactly two buttons "Home screen" left / "Settings" right (FR-007), the current destination visually indicated e.g. filled vs tonal (FR-008); content switches `HomeScreen` ↔ `SettingsScreen`; `BackHandler` on `SETTINGS` returns `HOME` (ui-contracts U-1..U-6); entering `HOME` triggers the home read cycle (FR-011 in-app return)
-- [ ] T023 [P] [US3] Implement `SettingsScreen` shell in `MAIN/ui/settings/SettingsScreen.kt`: titled surface ("Settings") reserving exactly one setting slot for the theme control (delivered in US4) — no other sections, no "coming soon" (S-1); screen-reader operable header semantics (A-1)
-- [ ] T024 [US3] Wire `MainActivity.kt` to host `AppTheme { AnalyzerApp(...) }` replacing the direct `HomeScreen` host; footer buttons expose button role + selected-state semantics (A-1)
-- [ ] T025 [US3] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-5 including the rapid-tap edge case and the system-back gesture
+- [X] T022 [US3] Implement the app shell in `MAIN/ui/AnalyzerApp.kt`: `Destination` enum (`HOME` initial, `SETTINGS`) held in a `mutableStateOf` (R-08, data-model §5); Scaffold with a persistent footer on every screen containing exactly two buttons "Home screen" left / "Settings" right (FR-007), the current destination visually indicated e.g. filled vs tonal (FR-008); content switches `HomeScreen` ↔ `SettingsScreen`; `BackHandler` on `SETTINGS` returns `HOME` (ui-contracts U-1..U-6); entering `HOME` triggers the home read cycle (FR-011 in-app return)
+- [X] T023 [P] [US3] Implement `SettingsScreen` shell in `MAIN/ui/settings/SettingsScreen.kt`: titled surface ("Settings") reserving exactly one setting slot for the theme control (delivered in US4) — no other sections, no "coming soon" (S-1); screen-reader operable header semantics (A-1)
+- [X] T024 [US3] Wire `MainActivity.kt` to host `AppTheme { AnalyzerApp(...) }` replacing the direct `HomeScreen` host; footer buttons expose button role + selected-state semantics (A-1)
+- [X] T025 [US3] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-5 including the rapid-tap edge case and the system-back gesture
 
 **Checkpoint**: Two-screen application shell complete over the themed home screen
 
