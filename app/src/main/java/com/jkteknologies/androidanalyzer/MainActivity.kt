@@ -3,7 +3,10 @@ package com.jkteknologies.androidanalyzer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
 import com.jkteknologies.androidanalyzer.data.SharedPreferencesThemeStore
 import com.jkteknologies.androidanalyzer.ui.AnalyzerApp
@@ -14,10 +17,12 @@ import com.jkteknologies.androidanalyzer.ui.theme.AppTheme
 
 /**
  * Sole Activity (single manifest component): hosts the app shell under
- * [AppTheme] (task T024). The theme preference is loaded once here at creation
- * via the store (R-07); `SYSTEM` default means the app follows the device theme
- * live (FR-006). Manual selection state lifts into this composition with US4
- * (T027). Home read cycles are triggered inside [HomeScreen] per FR-011.
+ * [AppTheme]. The theme preference is the app-state single source of truth
+ * (data-model §6): loaded once at creation via the store (R-07), lifted into
+ * Compose state, and on selection (task T027) persisted FIRST with `save()`
+ * then applied by updating the state — [AppTheme] recomposes immediately, no
+ * restart (FR-010). A corrupt persisted value already resolves to SYSTEM
+ * (V-10). Home read cycles are triggered inside [HomeScreen] per FR-011.
  */
 class MainActivity : ComponentActivity() {
 
@@ -25,7 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val themeStore = SharedPreferencesThemeStore(this)
         setContent {
-            val themePreference = remember { themeStore.load() }
+            var themePreference by remember { mutableStateOf(themeStore.load()) }
             AppTheme(preference = themePreference) {
                 val holder = remember {
                     val readers = AndroidDeviceReaders(this@MainActivity)
@@ -40,7 +45,15 @@ class MainActivity : ComponentActivity() {
                 }
                 AnalyzerApp(
                     home = { HomeScreen(holder) },
-                    settings = { SettingsScreen() },
+                    settings = {
+                        SettingsScreen(
+                            selectedPreference = themePreference,
+                            onPreferenceSelected = { selection ->
+                                themeStore.save(selection)
+                                themePreference = selection
+                            },
+                        )
+                    },
                 )
             }
         }

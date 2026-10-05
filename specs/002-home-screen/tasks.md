@@ -121,9 +121,9 @@ Single-module Android app (plan.md Project Structure). Abbreviations used throug
 
 **Independent Test**: Select each option and observe the immediate appearance change; force-stop and relaunch after a manual selection (quickstart M-6, SC-005). Depends on US2's theme machinery and US3's settings screen.
 
-- [ ] T026 [P] [US4] Implement the theme selector in `MAIN/ui/settings/SettingsScreen.kt`: exactly one setting, three selectable rows (Light / Dark / System default) wired to the T003 strings, `System default` selected initially (FR-009), selection raises a callback (S-1..S-6); rows expose selectable semantics with announced state (A-1/S-6)
-- [ ] T027 [US4] Lift theme preference into app state in `MainActivity.kt` (depends on T019, T020, T026): hold `themePreference` as Compose state loaded from `ThemePreferenceStore` at creation; on selection, `save()` then update state so `AppTheme` recomposes immediately — no restart (FR-010); corrupt-store fallback already covered by T017
-- [ ] T028 [US4] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-6 (immediacy + persistence across force-stop/relaunch) and the M-7 largest-font-scale walkthrough (revert `font_scale` afterwards)
+- [X] T026 [P] [US4] Implement the theme selector in `MAIN/ui/settings/SettingsScreen.kt`: exactly one setting, three selectable rows (Light / Dark / System default) wired to the T003 strings, `System default` selected initially (FR-009), selection raises a callback (S-1..S-6); rows expose selectable semantics with announced state (A-1/S-6)
+- [X] T027 [US4] Lift theme preference into app state in `MainActivity.kt` (depends on T019, T020, T026): hold `themePreference` as Compose state loaded from `ThemePreferenceStore` at creation; on selection, `save()` then update state so `AppTheme` recomposes immediately — no restart (FR-010); corrupt-store fallback already covered by T017
+- [X] T028 [US4] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-6 (immediacy + persistence across force-stop/relaunch) and the M-7 largest-font-scale walkthrough (revert `font_scale` afterwards)
 
 **Checkpoint**: All four stories complete — full feature behavior per spec
 
