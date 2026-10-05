@@ -1,9 +1,14 @@
 # Android Analyzer
 
 Android app that analyzes resource consumption and suggests improvements.
-Current status: **launchable skeleton** (feature `001-android-app-skeleton`) — a single
-Activity showing a full-screen "Android Analyzer" placeholder, zero permissions, no
-network, no background work.
+Current status: **home-screen analyzer** (feature `002-home-screen`) — a single
+Activity showing the one-shot device overview (memory, internal storage, battery,
+processor cores, installed apps), a footer switching Home/Settings, and a theme
+setting (Light / Dark / System default). One permission, no network, no background
+work: `QUERY_ALL_PACKAGES` is declared because the Applications figure requires the
+TOTAL installed-app count, which no package-visibility `<queries>` subset can
+enumerate (justification: `specs/002-home-screen/research.md` R-01; F-Droid target —
+Play's restriction of this permission does not apply).
 
 [![CI](https://github.com/jkteknologies/android-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/jkteknologies/android-analyzer/actions/workflows/ci.yml)
 
@@ -76,8 +81,11 @@ Temurin JDK 21, Gradle dependency caching, the runner's preinstalled Android SDK
 ## Manual launch check (optional)
 
 Install the debug APK (`app/build/outputs/apk/debug/app-debug.apk`) on an Android 15+
-emulator/device and launch it: a full-screen placeholder reading **"Android Analyzer"**
-appears (cold start well under 5 s; identical on rotation; zero permission prompts).
+emulator/device and launch it: the home screen renders immediately with placeholders
+and fills in the five figures within ~2 s. The full manual validation walkthrough
+(figure cross-checks against `adb` ground truth, theme switching, navigation,
+font-scale and TalkBack checks) lives in
+[`specs/002-home-screen/quickstart.md`](specs/002-home-screen/quickstart.md).
 
 ## Expected outcomes
 
@@ -88,7 +96,7 @@ appears (cold start well under 5 s; identical on rotation; zero permission promp
 | Offline build | `./gradlew build --offline` | `BUILD SUCCESSFUL` | valid after first warm run (SC-006) | 39 s clean, fully offline |
 | CI | push / PR | green run, all three checks pass | ≤ 15 min cold cache (SC-003) | see the Actions badge above |
 | App launch (optional, manual) | install on API 35+ | "Android Analyzer" placeholder ≤ 5 s | SC-005 | not measured (no emulator on dev VM) |
-| Permission surface | `aapt2 dump permissions app-debug.apk` | empty output | zero permissions (FR-009) | 0 `uses-permission` entries |
+| Permission surface | `aapt2 dump permissions app-debug.apk` | exactly `android.permission.QUERY_ALL_PACKAGES` | one justified permission (002 FR-013) | 1 `uses-permission` entry |
 
 ## License
 

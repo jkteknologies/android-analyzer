@@ -133,9 +133,9 @@ Single-module Android app (plan.md Project Structure). Abbreviations used throug
 
 **Purpose**: Cross-story verification that individual story gates cannot cover
 
-- [ ] T029 [P] Accessibility sweep (FR-015): walk home + settings with TalkBack (or semantics inspection) across all figure states (Loading/Available/Unavailable), footer buttons, and radio rows; confirm the unavailability indication is announced distinctly from any value (H-8) and nothing clips/overlaps at font scale 2.0 (H-9); fix findings in `MAIN/ui/home/HomeScreen.kt`, `MAIN/ui/AnalyzerApp.kt`, `MAIN/ui/settings/SettingsScreen.kt`
-- [ ] T030 [P] Update `README.md`: note the new `QUERY_ALL_PACKAGES` permission and its one-line justification, and point manual validation at `specs/002-home-screen/quickstart.md`
-- [ ] T031 Final gate: clean `./scripts/verify.sh` run (build + unit tests + lint) green; full quickstart M-1..M-8 pass; confirm the manifest delta for the whole feature is exactly the single `QUERY_ALL_PACKAGES` permission and no new components/receivers/services (SC-006, Constitution VIII); re-verify Constitution Principles I–IX compliance for the delivered code and record any deviation with rationale in plan.md
+- [X] T029 [P] Accessibility sweep (FR-015): walk home + settings with TalkBack (or semantics inspection) across all figure states (Loading/Available/Unavailable), footer buttons, and radio rows; confirm the unavailability indication is announced distinctly from any value (H-8) and nothing clips/overlaps at font scale 2.0 (H-9); fix findings in `MAIN/ui/home/HomeScreen.kt`, `MAIN/ui/AnalyzerApp.kt`, `MAIN/ui/settings/SettingsScreen.kt`
+- [X] T030 [P] Update `README.md`: note the new `QUERY_ALL_PACKAGES` permission and its one-line justification, and point manual validation at `specs/002-home-screen/quickstart.md`
+- [X] T031 Final gate: clean `./scripts/verify.sh` run (build + unit tests + lint) green; full quickstart M-1..M-8 pass; confirm the manifest delta for the whole feature is exactly the single `QUERY_ALL_PACKAGES` permission and no new components/receivers/services (SC-006, Constitution VIII); re-verify Constitution Principles I–IX compliance for the delivered code and record any deviation with rationale in plan.md
 
 ---
 

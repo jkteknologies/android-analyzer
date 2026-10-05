@@ -168,3 +168,39 @@ Re-evaluated against the generated artifacts ([research.md](./research.md),
   surface only). ✅
 
 **Final gate result: PASS — no violations; proceed to `/speckit-tasks`.**
+
+---
+
+## Implementation Deviations (T031 log, 2026-10-05)
+
+Recorded per the final-gate mandate; none changes designed behavior:
+
+1. **Package spelling in tasks.md paths**: the `MAIN`/`TEST` abbreviations say
+   `jktechnologies`, but the actual package (feature 001, manifest, namespace)
+   is `com.jktecnologies.androidanalyzer` — all new files use the real package.
+2. **`ThemePreference` enum delivered with US1 (early)**: T002's contract-typed
+   `ThemePreferenceStore` cannot compile without the enum, and the T016 gate
+   runs before T018. The tested resolution logic (`effectiveTheme`,
+   `fromPersisted`) still landed with US2 tests-first as planned.
+3. **Battery action constant**: research.md R-04 cites
+   `BatteryManager.ACTION_BATTERY_CHANGED`; the platform constant lives on
+   `android.content.Intent` (same value). Implemented via `Intent`'s constant.
+4. **`QUERY_ALL_PACKAGES` lint suppression**: AGP lint reports
+   `QueryAllPackagesPermission` as an error; suppressed on the element
+   (`tools:ignore`) because the permission decision is pre-justified (R-01,
+   Constitution VIII) and Play policy does not apply to the F-Droid target.
+5. **JVM-test seams**: `Formatter.formatShortFileSize` is an Android class that
+   throws on the JVM, so `FigureFormatting` takes an injected
+   `(Long) -> String` byte formatter (production wires the platform Formatter) —
+   the realization of T012's "inject locale for testability". Likewise
+   `HomeStateHolder` takes an injected `ExecutorService` + `ResultPoster`
+   (poster injection was already prescribed by T013).
+6. **`HomeStateHolder` catches `Throwable`**: honoring FR-012's no-crash
+   guarantee over Kotlin's generic-exception-catch lint warning.
+
+Final Constitution re-check (delivered code): I–IX all PASS — zero new
+dependencies (`app/build.gradle.kts` untouched by this feature), exactly one
+permission added with no new components, all reads one-shot and gated on home
+visibility, single executor thread, work confined to `feature/002-home-screen`,
+no remote push. Automated gates green; quickstart M-1..M-8 remain manual
+device/emulator checks (Constitution IV split).
