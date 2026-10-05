@@ -78,7 +78,7 @@ class HomeStateHolderTest {
         coreCountReader = CoreCountReader { coreCountResult },
         applicationCounter = ApplicationCounter { inventoryResult },
         poster = poster,
-        executor = executor,
+        executorFactory = { executor },
     )
 
     @Test
@@ -127,7 +127,7 @@ class HomeStateHolderTest {
             coreCountReader = CoreCountReader { coreCountResult },
             applicationCounter = ApplicationCounter { inventoryResult },
             poster = poster,
-            executor = executor,
+            executorFactory = { executor },
         )
         holderWithThrowingStorage.startReadCycle()
         executor.runLastPass()
@@ -183,5 +183,32 @@ class HomeStateHolderTest {
         val holder = holder()
         holder.shutdown()
         assertTrue(executor.shutDown)
+    }
+
+    @Test
+    fun `a cycle after shutdown draws a fresh executor instead of the rejected pool`() {
+        val first = ManualExecutor()
+        val second = ManualExecutor()
+        val executors = ArrayDeque(listOf(first, second))
+        val holder = HomeStateHolder(
+            memoryReader = MemoryReader { memoryResult },
+            storageReader = StorageReader { storageResult },
+            batteryReader = BatteryReader { batteryResult },
+            coreCountReader = CoreCountReader { coreCountResult },
+            applicationCounter = ApplicationCounter { inventoryResult },
+            poster = poster,
+            executorFactory = { executors.removeFirst() },
+        )
+        holder.startReadCycle()
+        assertEquals(1, first.passes.size)
+
+        holder.shutdown()
+        holder.startReadCycle() // in-app return — RejectedExecutionException before the fix
+
+        assertEquals(1, second.passes.size) // the revived cycle landed on the fresh executor
+        assertEquals(1, first.passes.size) // the terminated pool stays untouched
+        second.runLastPass()
+        poster.applyAll()
+        assertEquals(FigureUiState.Available(memoryResult), holder.memory)
     }
 }

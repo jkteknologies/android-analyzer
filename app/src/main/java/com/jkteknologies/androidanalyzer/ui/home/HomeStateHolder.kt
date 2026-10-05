@@ -40,7 +40,10 @@ fun interface ResultPoster {
  * Cycles are triggered by the hosting screen on entering composition while the
  * activity is already resumed (in-app return) and on lifecycle `ON_RESUME`
  * (launch and background resume) — FR-011, R-10. [shutdown] releases the
- * executor when the holder's screen leaves composition for good.
+ * executor whenever the holder's screen leaves composition; the holder itself
+ * survives destination switches, so the first cycle after such a shutdown (the
+ * in-app return) draws a fresh executor from the factory — a terminated pool
+ * must never be reused.
  */
 class HomeStateHolder(
     private val memoryReader: MemoryReader,
@@ -49,8 +52,10 @@ class HomeStateHolder(
     private val coreCountReader: CoreCountReader,
     private val applicationCounter: ApplicationCounter,
     private val poster: ResultPoster,
-    private val executor: ExecutorService = Executors.newSingleThreadExecutor(),
+    private val executorFactory: () -> ExecutorService = { Executors.newSingleThreadExecutor() },
 ) {
+    private var executor: ExecutorService = executorFactory()
+
     var memory: FigureUiState<MemoryReading> by mutableStateOf(FigureUiState.Loading)
         private set
     var storage: FigureUiState<StorageReading> by mutableStateOf(FigureUiState.Loading)
@@ -62,13 +67,21 @@ class HomeStateHolder(
     var applications: FigureUiState<ApplicationInventory> by mutableStateOf(FigureUiState.Loading)
         private set
 
-    /** Starts one read cycle: reset all figures, then one background pass over the five reads. */
+    /**
+     * Starts one read cycle: reset all figures, then one background pass over
+     * the five reads. A shut-down executor is replaced from the factory first —
+     * returning to HOME re-enters composition with the same holder whose
+     * executor was released on dispose.
+     */
     fun startReadCycle() {
         memory = FigureUiState.Loading
         storage = FigureUiState.Loading
         battery = FigureUiState.Loading
         processor = FigureUiState.Loading
         applications = FigureUiState.Loading
+        if (executor.isShutdown) {
+            executor = executorFactory()
+        }
         executor.execute {
             readAndPost(memoryReader::read) { memory = it }
             readAndPost(storageReader::read) { storage = it }

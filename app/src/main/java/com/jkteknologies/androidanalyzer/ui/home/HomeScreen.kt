@@ -38,7 +38,8 @@ import com.jkteknologies.androidanalyzer.domain.FigureUiState
  * Read-cycle triggers (FR-011, R-10): `ON_RESUME` (launch and background
  * resume) via a [DefaultLifecycleObserver], plus entering composition while
  * already resumed (in-app return). Nothing runs while home is not visible: the
- * observer detaches and the executor shuts down on dispose.
+ * observer detaches and the executor shuts down on dispose — returning to
+ * home starts the next cycle on a fresh executor.
  */
 @Composable
 fun HomeScreen(holder: HomeStateHolder, modifier: Modifier = Modifier) {
