@@ -87,14 +87,14 @@ Single-module Android app (plan.md Project Structure). Abbreviations used throug
 
 ### Tests for User Story 2 (write first; confirm they FAIL)
 
-- [ ] T017 [P] [US2] Write failing unit tests in `TEST/domain/ThemePreferenceTest.kt` covering data-model §4/V-10: effective resolution `LIGHT → Light`, `DARK → Dark`, `SYSTEM → systemInDarkMode ? Dark : Light` (both branches); missing or corrupt persisted value falls back to `SYSTEM`; persistence round-trip through a store fake (save→load returns the saved value)
+- [X] T017 [P] [US2] Write failing unit tests in `TEST/domain/ThemePreferenceTest.kt` covering data-model §4/V-10: effective resolution `LIGHT → Light`, `DARK → Dark`, `SYSTEM → systemInDarkMode ? Dark : Light` (both branches); missing or corrupt persisted value falls back to `SYSTEM`; persistence round-trip through a store fake (save→load returns the saved value)
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Implement `ThemePreference` in `MAIN/domain/ThemePreference.kt` making T017 pass: enum `LIGHT | DARK | SYSTEM` (`SYSTEM` the default, FR-009) + pure `effectiveTheme(preference, systemInDarkMode)` (pure Kotlin, no Android imports)
-- [ ] T019 [P] [US2] Implement `SharedPreferencesThemeStore` in `MAIN/data/SharedPreferencesThemeStore.kt` (depends on T002, T018): `ThemePreferenceStore` over a single string key `theme_preference` (enum name); `load()` maps missing/corrupt → `SYSTEM`; `save()` uses `apply()` (R-07); unit-testable via an in-memory `ThemePreferenceStore` fake exercising the contract
-- [ ] T020 [US2] Implement `AppTheme` in `MAIN/ui/theme/AppTheme.kt` (depends on T018, T019) and wire it in `MainActivity.kt`: `lightColorScheme()` / `darkColorScheme()` static palettes (R-06 — no dynamic color), scheme selected by `effectiveTheme(preference, isSystemInDarkTheme())`, preference loaded once at activity creation via the store; system theme switches follow live via recomposition and apply correctly on resume (FR-006, SC-004, ui-contracts T-1..T-4)
-- [ ] T021 [US2] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-4 (live switch foreground + correct theme after backgrounded switch)
+- [X] T018 [P] [US2] Implement `ThemePreference` in `MAIN/domain/ThemePreference.kt` making T017 pass: enum `LIGHT | DARK | SYSTEM` (`SYSTEM` the default, FR-009) + pure `effectiveTheme(preference, systemInDarkMode)` (pure Kotlin, no Android imports)
+- [X] T019 [P] [US2] Implement `SharedPreferencesThemeStore` in `MAIN/data/SharedPreferencesThemeStore.kt` (depends on T002, T018): `ThemePreferenceStore` over a single string key `theme_preference` (enum name); `load()` maps missing/corrupt → `SYSTEM`; `save()` uses `apply()` (R-07); unit-testable via an in-memory `ThemePreferenceStore` fake exercising the contract
+- [X] T020 [US2] Implement `AppTheme` in `MAIN/ui/theme/AppTheme.kt` (depends on T018, T019) and wire it in `MainActivity.kt`: `lightColorScheme()` / `darkColorScheme()` static palettes (R-06 — no dynamic color), scheme selected by `effectiveTheme(preference, isSystemInDarkTheme())`, preference loaded once at activity creation via the store; system theme switches follow live via recomposition and apply correctly on resume (FR-006, SC-004, ui-contracts T-1..T-4)
+- [X] T021 [US2] Quality gate: `./scripts/verify.sh` green; manually run quickstart M-4 (live switch foreground + correct theme after backgrounded switch)
 
 **Checkpoint**: Stories 1 AND 2 both work independently
 
