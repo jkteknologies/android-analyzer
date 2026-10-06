@@ -1,4 +1,43 @@
 <resources>
-    <!-- Sole string resource; the placeholder screen reads its text from here (U-1, FR-002). -->
+    <!--
+      Feature 002 strings (English only, spec assumption "Formatting").
+      Footer/theme strings stay unused until US3/US4 land — an interim
+      unused-resource lint warning is acceptable (warnings never fail the build).
+    -->
     <string name="app_name">Android Analyzer</string>
+
+    <!-- Home screen figure labels (FR-001/FR-003) -->
+    <string name="figure_memory">Memory</string>
+    <string name="figure_internal_storage">Internal storage</string>
+    <string name="figure_battery">Battery</string>
+    <string name="figure_processor">Processor</string>
+    <string name="figure_applications">Applications</string>
+
+    <!-- Home screen figure value templates (H-2/H-3, R-12) -->
+    <string name="memory_value">Available %1$s · Allocated %2$s</string>
+    <string name="storage_value">Free %1$s · Used %2$s</string>
+    <string name="battery_value">%1$d%% · %2$s</string>
+    <string name="applications_value">%1$s (%2$s)</string>
+
+    <!-- Neutral placeholder and unavailability indication (FR-012/FR-014) -->
+    <string name="figure_placeholder">—</string>
+    <string name="figure_unavailable">Not available</string>
+
+    <!-- Battery charging states (data-model §2.3) -->
+    <string name="charging_charging">Charging</string>
+    <string name="charging_not_charging">Not charging</string>
+
+    <!-- TalkBack name-and-value template, one per figure via its label (H-8, FR-015) -->
+    <string name="figure_content_description">%1$s: %2$s</string>
+
+    <!-- Footer navigation (FR-007/FR-008, US3) -->
+    <string name="footer_home">Home screen</string>
+    <string name="footer_settings">Settings</string>
+
+    <!-- Settings screen (FR-009, US3/US4) -->
+    <string name="settings_title">Settings</string>
+    <string name="theme_label">Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System default</string>
 </resources>
