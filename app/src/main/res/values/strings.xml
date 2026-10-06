@@ -40,4 +40,10 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System default</string>
+
+    <!-- Pull-to-refresh accessibility: trigger action + spoken cycle states
+         (003 FR-013, SC-006; research R-06) -->
+    <string name="refresh_action">Refresh figures</string>
+    <string name="refresh_status_refreshing">Refreshing figures</string>
+    <string name="refresh_status_done">Figures refreshed</string>
 </resources>
