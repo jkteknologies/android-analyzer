@@ -242,3 +242,9 @@ Task: "T027 [P] [US5] CoreTierReader + sysfs impl"           (DeviceReaders.kt, 
 6. **T027 fallback frequency**: the fallback tier carries a placeholder
    1 Hz frequency (never displayed — single tiers render the plain count),
    marked with a `ponytail:` ceiling comment naming the upgrade path.
+
+---
+
+## Phase 9: Convergence
+
+- [ ] T032 Execute the deferred on-device quickstart matrix M-1..M-11 against a headless emulator — the blocked-in-VM premise ("no KVM, no system images") no longer holds: `/dev/kvm` is present, `sdkmanager` lives at `/opt/cmdline-tools/bin`, ~25 GB disk is free, and dl.google.com is reachable — install the `emulator` package plus `system-images;android-35;google_apis;x86_64`, create and boot a headless AVD, `./gradlew installDebug`, then run quickstart §2 and record outcomes against SC-001..SC-008: M-1 counts vs `adb shell pm list packages` / `-s` / `-3`; M-2 grant flow via `adb shell appops set <pkg> GET_USAGE_STATS allow` + refresh; M-3/M-7 filter switching and drill-down override via `adb shell input tap`/`am start`; M-5 reconcile via `adb install`/`uninstall`; M-6 footer geometry via `screencap`; M-8/M-9 auto-refresh timing incl. a ~2 min backgrounded window; M-10 plain-total fallback rendering on the single-cluster emulator; M-11 font-scale/landscape via `adb shell settings put system font_scale 2.0` (TalkBack itself if the image ships it); if the image download or boot fails, record the precise failure and re-close the row as blocked (T011/T012/T018/T024/T029/T031, quickstart §2 — partial)
