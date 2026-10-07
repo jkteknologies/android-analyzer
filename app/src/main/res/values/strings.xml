@@ -30,8 +30,9 @@
     <!-- TalkBack name-and-value template, one per figure via its label (H-8, FR-015) -->
     <string name="figure_content_description">%1$s: %2$s</string>
 
-    <!-- Footer navigation (FR-007/FR-008, US3) -->
-    <string name="footer_home">Home screen</string>
+    <!-- Footer navigation (004 FR-002/FR-003, N-3: reworded Home, new Details) -->
+    <string name="footer_home">Home</string>
+    <string name="footer_details">Details</string>
     <string name="footer_settings">Settings</string>
 
     <!-- Settings screen (FR-009, US3/US4) -->

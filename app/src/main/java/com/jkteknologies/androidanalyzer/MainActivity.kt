@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 }
                 AnalyzerApp(
                     home = { HomeScreen(holder) },
+                    details = { }, // 004 T003 placeholder — T010 installs the Details screen
                     settings = {
                         SettingsScreen(
                             selectedPreference = themePreference,
