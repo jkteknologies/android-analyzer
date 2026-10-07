@@ -40,3 +40,6 @@ Thumbs.db
 *.tmp
 *.swp
 .vscode/
+
+# Agentic development
+.zcode/plans
