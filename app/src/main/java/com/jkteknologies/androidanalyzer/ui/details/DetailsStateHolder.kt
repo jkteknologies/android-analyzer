@@ -40,6 +40,16 @@ class DetailsStateHolder(
 ) {
     private var executor: ExecutorService = executorFactory()
 
+    /**
+     * The Shizuku change subscription (005 data-model §8, contract clause 7):
+     * registered at construction (library callbacks already arrive on the
+     * main thread; the poster keeps every state write main-thread-confined)
+     * and removed in [shutdown].
+     */
+    private val unsubscribeChanges: () -> Unit = shizukuChangeSource.listen {
+        poster.post(::onShizukuChanged)
+    }
+
     /** Identity of the current read pass; posts carrying a stale one are dropped (003 C-5). */
     private var epoch: Int = 0
 
@@ -125,6 +135,34 @@ class DetailsStateHolder(
     }
 
     /**
+     * The guidance row's Allow action (005 FR-005): forwards to Shizuku's own
+     * dialog — the analyzer adds nothing around it and stores nothing. A
+     * throw (binder died between the state check and the tap) is swallowed:
+     * the change source or the next pass re-reads the state (R-04).
+     */
+    fun requestAuthorization() {
+        try {
+            shizukuAuthorizer.request()
+        } catch (_: Throwable) {
+            // not fatal — the state re-reads via the change source / next pass
+        }
+    }
+
+    /**
+     * One Shizuku change event landed on the main thread (005 data-model §8):
+     * once a state has been posted, every event triggers one coalescing
+     * [refresh] — the pass re-reads the state and the figures together, so
+     * the guidance can never disagree with the figures (FR-007, SC-003/SC-004).
+     * The initial sticky delivery finds no posted state and triggers nothing
+     * (V-S5 — no double pass at startup).
+     */
+    private fun onShizukuChanged() {
+        if (shizukuAccess != null) {
+            refresh()
+        }
+    }
+
+    /**
      * One background pass: the usage-access check and the inventory read,
      * then the figure post and the completion post in FIFO order — the
      * indication clears only after the figure has landed (V-D5).
@@ -170,8 +208,9 @@ class DetailsStateHolder(
         }
     }
 
-    /** Releases the single executor thread (host screen discarded). */
+    /** Releases the single executor thread and the change subscription (host screen discarded). */
     fun shutdown() {
+        unsubscribeChanges()
         executor.shutdown()
     }
 }

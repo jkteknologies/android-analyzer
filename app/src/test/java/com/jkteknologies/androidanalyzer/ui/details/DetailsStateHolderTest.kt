@@ -79,6 +79,7 @@ class DetailsStateHolderTest {
     private var inventoryResult: AppInventory? = inventoryOf(null, null)
     private var shizukuStateResult: ShizukuAccessState = ShizukuAccessState.NOT_INSTALLED
     private var authorizerCalls = 0
+    private var changeUnsubscribed = false
     private val changeEvents = mutableListOf<() -> Unit>()
 
     private val holder = DetailsStateHolder(
@@ -88,7 +89,7 @@ class DetailsStateHolderTest {
         shizukuAuthorizer = ShizukuAuthorizer { authorizerCalls++ },
         shizukuChangeSource = ShizukuChangeSource { onChange ->
             changeEvents += onChange
-            {}
+            { changeUnsubscribed = true }
         },
         poster = poster,
         executorFactory = { executor },
@@ -321,5 +322,77 @@ class DetailsStateHolderTest {
                 assertEquals(state, holder.shizukuAccess)
                 assertTrue(landedApps().all { it.memoryBytes == null })
             }
+    }
+
+    // V-S6 (005): the Allow action delegates to the authorizer seam and
+    // survives one that throws (binder died between check and tap).
+
+    @Test
+    fun `requestAuthorization delegates to the authorizer seam`() { // V-S6
+        holder.requestAuthorization()
+
+        assertEquals(1, authorizerCalls)
+    }
+
+    @Test
+    fun `requestAuthorization survives a throwing authorizer`() { // V-S6
+        val throwing = DetailsStateHolder(
+            installedAppReader = InstalledAppReader { inventoryResult },
+            usageAccessStatus = UsageAccessStatus { true },
+            shizukuAccessStatus = ShizukuAccessStatus { shizukuStateResult },
+            shizukuAuthorizer = ShizukuAuthorizer { error("binder died") },
+            shizukuChangeSource = ShizukuChangeSource { _ -> {} },
+            poster = poster,
+            executorFactory = { executor },
+        )
+
+        throwing.requestAuthorization() // must not throw
+    }
+
+    // V-S4/V-S5 (005): the change-source reactivity — one coalescing refresh
+    // per event once a state has been posted, nothing before that, and the
+    // subscription dies with shutdown().
+
+    @Test
+    fun `the initial sticky delivery triggers no refresh`() { // V-S5
+        changeEvents.forEach { it() } // what listen registered at construction
+        poster.applyAll()
+
+        assertEquals(0, executor.passes.size)
+        assertEquals(0, readerCalls)
+    }
+
+    @Test
+    fun `a change event after a posted state triggers one coalescing refresh that re-reads by itself`() { // V-S4
+        shizukuStateResult = ShizukuAccessState.AWAITING_AUTHORIZATION
+        holder.startReadCycle()
+        executor.runLastPass()
+        poster.applyAll()
+        assertEquals(ShizukuAccessState.AWAITING_AUTHORIZATION, holder.shizukuAccess)
+        val callsAfterFirstPass = readerCalls
+
+        shizukuStateResult = ShizukuAccessState.AUTHORIZED // the event was a grant
+        changeEvents.forEach { it() }
+        poster.applyAll() // onShizukuChanged runs on the main thread
+
+        val passesAfterEvent = executor.passes.size
+        assertEquals(callsAfterFirstPass, readerCalls) // the pass is queued, not yet run
+        assertTrue(passesAfterEvent > 0)
+
+        changeEvents.forEach { it() } // an event while that pass is queued: absorbed
+        poster.applyAll()
+        assertEquals(passesAfterEvent, executor.passes.size)
+
+        executor.runLastPass() // the refresh pass runs
+        poster.applyAll()
+        assertEquals(callsAfterFirstPass + 1, readerCalls)
+        assertEquals(ShizukuAccessState.AUTHORIZED, holder.shizukuAccess) // re-read landed with no gesture
+    }
+
+    @Test
+    fun `shutdown unsubscribes the change source`() { // V-S4's dispose half
+        holder.shutdown()
+
+        assertTrue(changeUnsubscribed)
     }
 }
