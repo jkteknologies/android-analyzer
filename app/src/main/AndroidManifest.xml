@@ -53,6 +53,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          Sole component added by feature 005 (research.md R-05, Constitution
+          VIII): the Shizuku client library's provider — the receiver through
+          which a running Shizuku server pushes its binder into this process.
+          It adds NO permission to this app's install-time surface (SC-006) and
+          needs no <queries> entry: 002's QUERY_ALL_PACKAGES already makes
+          moe.shizuku.privileged.api visible. The android:permission attribute
+          guards who may CALL this provider (signature-level, held by the shell
+          uid) — it is not a permission this app requests. The attribute set is
+          fixed by the library: ShizukuProvider.attachInfo() throws at runtime
+          if multiprocess/exported deviate.
+        -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 
 </manifest>

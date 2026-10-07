@@ -36,6 +36,9 @@ android {
 
     buildFeatures {
         compose = true
+        // Feature 005 (research.md R-02): the UserService AIDL pair under
+        // src/main/aidl — the feature's entire privileged surface.
+        aidl = true
     }
 
     // Built-in AGP lint: errors fatal (FR-005, R-09); warnings never fail the build.
@@ -59,6 +62,12 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
+
+    // Feature 005 (research.md R-01/R-11, Constitution VII): the Shizuku client
+    // protocol library — the user-requested privileged-API mechanism (spec FR-003);
+    // MIT-licensed, no install-time permission, no network use.
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 
     testImplementation(libs.junit)
 }

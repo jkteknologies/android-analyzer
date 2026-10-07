@@ -52,6 +52,9 @@ class MainActivity : ComponentActivity() {
                     DetailsStateHolder(
                         installedAppReader = readers.installedAppReader,
                         usageAccessStatus = readers.usageAccessStatus,
+                        shizukuAccessStatus = readers.shizukuAccessStatus,
+                        shizukuAuthorizer = readers.shizukuAuthorizer,
+                        shizukuChangeSource = readers.shizukuChangeSource,
                         poster = HomeStateHolder.mainThreadPoster(),
                     )
                 }

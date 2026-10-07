@@ -4,10 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.InstalledAppReader
+import com.jkteknologies.androidanalyzer.data.ShizukuAccessStatus
+import com.jkteknologies.androidanalyzer.data.ShizukuAuthorizer
+import com.jkteknologies.androidanalyzer.data.ShizukuChangeSource
 import com.jkteknologies.androidanalyzer.data.UsageAccessStatus
 import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
 import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
+import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
 import com.jkteknologies.androidanalyzer.ui.home.ResultPoster
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -28,10 +32,34 @@ import java.util.concurrent.Executors
 class DetailsStateHolder(
     private val installedAppReader: InstalledAppReader,
     private val usageAccessStatus: UsageAccessStatus,
+    private val shizukuAccessStatus: ShizukuAccessStatus,
+    private val shizukuAuthorizer: ShizukuAuthorizer,
+    private val shizukuChangeSource: ShizukuChangeSource,
     private val poster: ResultPoster,
     private val executorFactory: () -> ExecutorService = { Executors.newSingleThreadExecutor() },
 ) {
     private var executor: ExecutorService = executorFactory()
+
+    /**
+     * The Shizuku change subscription (005 data-model §8, contract clause 7,
+     * T019): owned exactly like the executor — subscribed lazily by the first
+     * [startCycle] (nothing registered while the screen is unused), removed
+     * in [shutdown] (Details dispose — every tab-away), and re-subscribed by
+     * the next cycle after a shutdown. The auto re-read on grant therefore
+     * survives tab switches (FR-007, SC-003), and a holder whose screen is
+     * gone never keeps listening (Constitution IX). Library callbacks already
+     * arrive on the main thread; the poster keeps every state write
+     * main-thread-confined.
+     */
+    private var unsubscribeChanges: (() -> Unit)? = null
+
+    private fun ensureChangeSubscription() {
+        if (unsubscribeChanges == null) {
+            unsubscribeChanges = shizukuChangeSource.listen {
+                poster.post(::onShizukuChanged)
+            }
+        }
+    }
 
     /** Identity of the current read pass; posts carrying a stale one are dropped (003 C-5). */
     private var epoch: Int = 0
@@ -50,6 +78,16 @@ class DetailsStateHolder(
      * hint shows (FR-008).
      */
     var usageAccessGranted: Boolean? by mutableStateOf(null)
+        private set
+
+    /**
+     * The Shizuku state as of the latest landed pass (005 data-model §8):
+     * `null` until the first pass lands (guidance row hidden), then the
+     * ladder's value — posted in the same epoch-guarded post as [inventory]
+     * and [usageAccessGranted], so the guidance and the figures can never
+     * disagree.
+     */
+    var shizukuAccess: ShizukuAccessState? by mutableStateOf(null)
         private set
 
     /**
@@ -108,6 +146,34 @@ class DetailsStateHolder(
     }
 
     /**
+     * The guidance row's Allow action (005 FR-005): forwards to Shizuku's own
+     * dialog — the analyzer adds nothing around it and stores nothing. A
+     * throw (binder died between the state check and the tap) is swallowed:
+     * the change source or the next pass re-reads the state (R-04).
+     */
+    fun requestAuthorization() {
+        try {
+            shizukuAuthorizer.request()
+        } catch (_: Throwable) {
+            // not fatal — the state re-reads via the change source / next pass
+        }
+    }
+
+    /**
+     * One Shizuku change event landed on the main thread (005 data-model §8):
+     * once a state has been posted, every event triggers one coalescing
+     * [refresh] — the pass re-reads the state and the figures together, so
+     * the guidance can never disagree with the figures (FR-007, SC-003/SC-004).
+     * The initial sticky delivery finds no posted state and triggers nothing
+     * (V-S5 — no double pass at startup).
+     */
+    private fun onShizukuChanged() {
+        if (shizukuAccess != null) {
+            refresh()
+        }
+    }
+
+    /**
      * One background pass: the usage-access check and the inventory read,
      * then the figure post and the completion post in FIFO order — the
      * indication clears only after the figure has landed (V-D5).
@@ -121,11 +187,17 @@ class DetailsStateHolder(
         if (executor.isShutdown) {
             executor = executorFactory()
         }
+        ensureChangeSubscription()
         executor.execute {
             val granted = try {
                 usageAccessStatus.granted()
             } catch (t: Throwable) {
                 null // unknown — neither hint nor figures follow from a broken check
+            }
+            val shizukuState = try {
+                shizukuAccessStatus.state()
+            } catch (t: Throwable) {
+                null // the ladder never throws; a broken check keeps the last posted state
             }
             val state = try {
                 installedAppReader.read()?.let { FigureUiState.Available(it) } ?: FigureUiState.Unavailable
@@ -136,6 +208,7 @@ class DetailsStateHolder(
                 if (epoch == cycleEpoch) {
                     inventory = state
                     usageAccessGranted = granted
+                    shizukuState?.let { shizukuAccess = it }
                 }
             }
             poster.post {
@@ -147,8 +220,10 @@ class DetailsStateHolder(
         }
     }
 
-    /** Releases the single executor thread (host screen discarded). */
+    /** Releases the single executor thread and the change subscription (host screen discarded). */
     fun shutdown() {
+        unsubscribeChanges?.invoke()
+        unsubscribeChanges = null
         executor.shutdown()
     }
 }

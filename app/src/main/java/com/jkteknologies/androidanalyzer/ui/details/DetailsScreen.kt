@@ -46,9 +46,11 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.jkteknologies.androidanalyzer.R
+import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuAccess
 import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
 import com.jkteknologies.androidanalyzer.domain.AppClassification
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
+import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
 import com.jkteknologies.androidanalyzer.domain.InstalledApp
 
 /**
@@ -107,6 +109,14 @@ fun DetailsScreen(holder: DetailsStateHolder, modifier: Modifier = Modifier) {
             )
         }
     }
+    val openShizuku = remember(context) {
+        {
+            context.packageManager
+                .getLaunchIntentForPackage(ShizukuAccess.SHIZUKU_PACKAGE)
+                ?.let(context::startActivity)
+            Unit // not installed / no launcher entry: the row simply does nothing (G-3)
+        }
+    }
 
     // 003 a11y pair reused verbatim (P-2): screen-reader refresh trigger path
     // plus spoken "Refreshing figures" / "Figures refreshed" cycle states.
@@ -162,6 +172,13 @@ fun DetailsScreen(holder: DetailsStateHolder, modifier: Modifier = Modifier) {
             )
             if (holder.usageAccessGranted == false) {
                 GrantHintRow()
+            }
+            holder.shizukuAccess?.let { state ->
+                ShizukuGuidanceRow(
+                    state = state,
+                    onOpenShizuku = openShizuku,
+                    onRequestAuthorization = holder::requestAuthorization,
+                )
             }
             FilterRow(holder)
             when (val state = holder.inventory) {
@@ -247,6 +264,61 @@ private fun GrantHintRow() {
         }
     }
 }
+
+/**
+ * The Shizuku guidance row (005 contracts/details-guidance.md G-1..G-6): one
+ * row below the usage-access hint and above the filter naming the current
+ * state in plain language, with the matching action — "Open Shizuku" when it
+ * is stopped, "Allow access" (Shizuku's own dialog) when awaiting
+ * authorization; text only otherwise, one quiet line when authorized. The
+ * text is a polite live region so state changes are announced without focus
+ * changes (G-5); the row never blocks the list, filter, or figures (G-6).
+ * Same layout as [GrantHintRow] (text `weight(1f)` + optional button,
+ * sp-scaled, no fixed heights).
+ */
+@Composable
+private fun ShizukuGuidanceRow(
+    state: ShizukuAccessState,
+    onOpenShizuku: () -> Unit,
+    onRequestAuthorization: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = guidanceText(state),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .weight(1f)
+                .semantics { liveRegion = LiveRegionMode.Polite },
+        )
+        when (state) {
+            ShizukuAccessState.NOT_RUNNING -> Button(onClick = onOpenShizuku) {
+                Text(stringResource(R.string.shizuku_open))
+            }
+            ShizukuAccessState.AWAITING_AUTHORIZATION -> Button(onClick = onRequestAuthorization) {
+                Text(stringResource(R.string.shizuku_allow))
+            }
+            ShizukuAccessState.NOT_INSTALLED, ShizukuAccessState.OUTDATED, ShizukuAccessState.AUTHORIZED -> Unit
+        }
+    }
+}
+
+@Composable
+private fun guidanceText(state: ShizukuAccessState): String = stringResource(
+    when (state) {
+        ShizukuAccessState.NOT_INSTALLED -> R.string.shizuku_hint_not_installed
+        ShizukuAccessState.NOT_RUNNING -> R.string.shizuku_hint_not_running
+        ShizukuAccessState.OUTDATED -> R.string.shizuku_hint_outdated
+        ShizukuAccessState.AWAITING_AUTHORIZATION -> R.string.shizuku_hint_awaiting
+        ShizukuAccessState.AUTHORIZED -> R.string.shizuku_hint_authorized
+    },
+)
 
 /** The three-option single-select filter above the list (D-2, FR-005). */
 @Composable
