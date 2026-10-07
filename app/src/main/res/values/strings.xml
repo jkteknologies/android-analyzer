@@ -6,18 +6,19 @@
     -->
     <string name="app_name">Android Analyzer</string>
 
-    <!-- Home screen figure labels (FR-001/FR-003) -->
+    <!-- Home screen figure labels (FR-001/FR-003; 004 FR-011 splits Applications) -->
     <string name="figure_memory">Memory</string>
     <string name="figure_internal_storage">Internal storage</string>
     <string name="figure_battery">Battery</string>
     <string name="figure_processor">Processor</string>
-    <string name="figure_applications">Applications</string>
+    <string name="figure_user_applications">User applications</string>
+    <string name="figure_system_applications">System applications</string>
 
     <!-- Home screen figure value templates (H-2/H-3, R-12) -->
     <string name="memory_value">Available %1$s · Allocated %2$s</string>
     <string name="storage_value">Free %1$s · Used %2$s</string>
     <string name="battery_value">%1$d%% · %2$s</string>
-    <string name="applications_value">%1$s (%2$s)</string>
+    <string name="processor_tiers_value">%1$d cores: %2$s</string>
 
     <!-- Neutral placeholder and unavailability indication (FR-012/FR-014) -->
     <string name="figure_placeholder">—</string>
@@ -30,8 +31,9 @@
     <!-- TalkBack name-and-value template, one per figure via its label (H-8, FR-015) -->
     <string name="figure_content_description">%1$s: %2$s</string>
 
-    <!-- Footer navigation (FR-007/FR-008, US3) -->
-    <string name="footer_home">Home screen</string>
+    <!-- Footer navigation (004 FR-002/FR-003, N-3: reworded Home, new Details) -->
+    <string name="footer_home">Home</string>
+    <string name="footer_details">Details</string>
     <string name="footer_settings">Settings</string>
 
     <!-- Settings screen (FR-009, US3/US4) -->
@@ -46,4 +48,25 @@
     <string name="refresh_action">Refresh figures</string>
     <string name="refresh_status_refreshing">Refreshing figures</string>
     <string name="refresh_status_done">Figures refreshed</string>
+
+    <!-- Details screen (004 R-10: title, filter labels, marks, per-app figure
+         templates, usage-access hint + grant button, per-filter empty state) -->
+    <string name="details_title">Details</string>
+    <string name="filter_all">All</string>
+    <string name="filter_user">User</string>
+    <string name="filter_system">System</string>
+    <string name="app_mark_system">System</string>
+    <string name="app_mark_user">User</string>
+    <string name="app_storage_value">Storage %1$s</string>
+    <string name="app_memory_value">Memory %1$s</string>
+    <string name="usage_access_hint">Usage access is off. Grant it to see how much storage each app uses.</string>
+    <string name="usage_access_grant">Grant access</string>
+    <string name="details_empty">No applications in the %1$s list</string>
+
+    <!-- Automatic refresh setting (004 FR-014/FR-015, S-1: exactly four options) -->
+    <string name="refresh_mode_label">Automatic refresh</string>
+    <string name="refresh_mode_on_demand">On demand</string>
+    <string name="refresh_mode_30s">Every 30 seconds</string>
+    <string name="refresh_mode_1min">Every minute</string>
+    <string name="refresh_mode_5min">Every 5 minutes</string>
 </resources>

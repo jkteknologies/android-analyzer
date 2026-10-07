@@ -2,7 +2,8 @@ package com.jkteknologies.androidanalyzer.ui.home
 
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTier
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
 import java.util.Locale
@@ -21,7 +22,7 @@ class FigureFormattingTest {
         memoryValue = "Available %1\$s · Allocated %2\$s",
         storageValue = "Free %1\$s · Used %2\$s",
         batteryValue = "%1\$d%% · %2\$s",
-        applicationsValue = "%1\$s (%2\$s)",
+        processorTiersValue = "%1\$d cores: %2\$s",
         charging = "Charging",
         notCharging = "Not charging",
     )
@@ -53,17 +54,36 @@ class FigureFormattingTest {
     }
 
     @Test
-    fun `processor value is the plain grouped count`() {
-        assertEquals("8", formatting().processorValue(CoreCount(8)))
-        assertEquals("16", formatting().processorValue(CoreCount(16)))
+    fun `processor single tier renders the plain grouped count — byte-identical to 002`() { // V-A4b
+        val single = CoreTiers.create(8, listOf(CoreTier(8, 1_800_000_000)))!!
+        assertEquals("8", formatting().processorValue(single))
+        val sixteen = CoreTiers.create(16, listOf(CoreTier(16, 999_999_999)))!!
+        assertEquals("16", formatting().processorValue(sixteen))
     }
 
     @Test
-    fun `applications value composes the N (M) template with grouped counts`() {
+    fun `processor multi tier renders N cores colon tiers with one-decimal GHz`() { // V-A4b
+        val bigLittle = CoreTiers.create(
+            8,
+            listOf(CoreTier(4, 2_400_000_000), CoreTier(4, 1_800_000_000)),
+        )!!
+        assertEquals("8 cores: 4 × 1.8 GHz + 4 × 2.4 GHz", formatting().processorValue(bigLittle))
+    }
+
+    @Test
+    fun `user applications value is the grouped non-system count`() { // 004 T015
         val inventory = ApplicationInventory.create(nonSystemCount = 36, totalCount = 121)!!
-        assertEquals("36 (121)", formatting().applicationsValue(inventory))
+        assertEquals("36", formatting().userApplicationsValue(inventory))
         val large = ApplicationInventory.create(nonSystemCount = 1234, totalCount = 1_234_567)!!
-        assertEquals("1,234 (1,234,567)", formatting().applicationsValue(large))
-        assertEquals("1.234 (1.234.567)", formatting(Locale.GERMANY).applicationsValue(large))
+        assertEquals("1,234", formatting().userApplicationsValue(large))
+        assertEquals("1.234", formatting(Locale.GERMANY).userApplicationsValue(large))
+    }
+
+    @Test
+    fun `system applications value is the grouped derived system count`() { // 004 T015
+        val inventory = ApplicationInventory.create(nonSystemCount = 36, totalCount = 121)!!
+        assertEquals("85", formatting().systemApplicationsValue(inventory))
+        val none = ApplicationInventory.create(nonSystemCount = 5, totalCount = 5)!!
+        assertEquals("0", formatting().systemApplicationsValue(none))
     }
 }

@@ -9,7 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
 import com.jkteknologies.androidanalyzer.data.SharedPreferencesThemeStore
+import com.jkteknologies.androidanalyzer.data.SharedPreferencesRefreshModeStore
 import com.jkteknologies.androidanalyzer.ui.AnalyzerApp
+import com.jkteknologies.androidanalyzer.ui.details.DetailsScreen
+import com.jkteknologies.androidanalyzer.ui.details.DetailsStateHolder
 import com.jkteknologies.androidanalyzer.ui.home.HomeScreen
 import com.jkteknologies.androidanalyzer.ui.home.HomeStateHolder
 import com.jkteknologies.androidanalyzer.ui.settings.SettingsScreen
@@ -29,28 +32,60 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val themeStore = SharedPreferencesThemeStore(this)
+        val refreshModeStore = SharedPreferencesRefreshModeStore(this)
         setContent {
             var themePreference by remember { mutableStateOf(themeStore.load()) }
+            var refreshMode by remember { mutableStateOf(refreshModeStore.load()) }
             AppTheme(preference = themePreference) {
+                val readers = remember { AndroidDeviceReaders(this@MainActivity) }
                 val holder = remember {
-                    val readers = AndroidDeviceReaders(this@MainActivity)
                     HomeStateHolder(
                         memoryReader = readers.memoryReader,
                         storageReader = readers.storageReader,
                         batteryReader = readers.batteryReader,
-                        coreCountReader = readers.coreCountReader,
+                        coreTierReader = readers.coreTierReader,
                         applicationCounter = readers.applicationCounter,
                         poster = HomeStateHolder.mainThreadPoster(),
                     )
                 }
+                val detailsHolder = remember {
+                    DetailsStateHolder(
+                        installedAppReader = readers.installedAppReader,
+                        usageAccessStatus = readers.usageAccessStatus,
+                        poster = HomeStateHolder.mainThreadPoster(),
+                    )
+                }
                 AnalyzerApp(
-                    home = { HomeScreen(holder) },
+                    refreshMode = refreshMode,
+                    refreshHome = holder::refresh,
+                    refreshDetails = detailsHolder::refresh,
+                    home = { onOpenApplications ->
+                        HomeScreen(holder, onOpenApplications)
+                    },
+                    details = { pendingFilter, onPendingFilterConsumed ->
+                        // H-3 consumption: apply the arrival directive synchronously
+                        // before the screen composes — no full-list flash on arrival —
+                        // then clear the shell slot (once). Plain recomposition with a
+                        // null directive never touches the filter.
+                        pendingFilter?.let {
+                            detailsHolder.applyPendingFilter(it)
+                            onPendingFilterConsumed()
+                        }
+                        DetailsScreen(detailsHolder)
+                    },
                     settings = {
                         SettingsScreen(
                             selectedPreference = themePreference,
                             onPreferenceSelected = { selection ->
                                 themeStore.save(selection)
                                 themePreference = selection
+                            },
+                            selectedRefreshMode = refreshMode,
+                            onRefreshModeSelected = { selection ->
+                                // S-2/W-1: persist first, then update the lifted state —
+                                // the same save-then-apply order as the theme (002 T-027).
+                                refreshModeStore.save(selection)
+                                refreshMode = selection
                             },
                         )
                     },

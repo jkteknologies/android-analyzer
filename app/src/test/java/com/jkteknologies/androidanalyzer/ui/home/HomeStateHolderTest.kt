@@ -2,12 +2,13 @@ package com.jkteknologies.androidanalyzer.ui.home
 
 import com.jkteknologies.androidanalyzer.data.ApplicationCounter
 import com.jkteknologies.androidanalyzer.data.BatteryReader
-import com.jkteknologies.androidanalyzer.data.CoreCountReader
+import com.jkteknologies.androidanalyzer.data.CoreTierReader
 import com.jkteknologies.androidanalyzer.data.MemoryReader
 import com.jkteknologies.androidanalyzer.data.StorageReader
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTier
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
@@ -77,14 +78,14 @@ class HomeStateHolderTest {
     private var memoryResult: MemoryReading? = MemoryReading.create(10_000, 4_000)
     private var storageResult: StorageReading? = StorageReading.create(8_000, 2_000)
     private var batteryResult: BatteryReading? = BatteryReading.create(87, charging = true)
-    private var coreCountResult: CoreCount? = CoreCount(8)
+    private var coreCountResult: CoreTiers? = CoreTiers.create(8, listOf(CoreTier(8, 1_800_000_000)))
     private var inventoryResult: ApplicationInventory? = ApplicationInventory.create(36, 121)
 
     private fun holder() = HomeStateHolder(
         memoryReader = MemoryReader { memoryResult },
         storageReader = StorageReader { storageResult },
         batteryReader = BatteryReader { batteryResult },
-        coreCountReader = CoreCountReader { coreCountResult },
+        coreTierReader = CoreTierReader { coreCountResult },
         applicationCounter = ApplicationCounter { inventoryResult },
         poster = poster,
         executorFactory = { executor },
@@ -133,7 +134,7 @@ class HomeStateHolderTest {
             memoryReader = MemoryReader { memoryResult },
             storageReader = StorageReader { error("platform read failed") },
             batteryReader = BatteryReader { batteryResult },
-            coreCountReader = CoreCountReader { coreCountResult },
+            coreTierReader = CoreTierReader { coreCountResult },
             applicationCounter = ApplicationCounter { inventoryResult },
             poster = poster,
             executorFactory = { executor },
@@ -150,7 +151,7 @@ class HomeStateHolderTest {
     @Test
     fun `a nonsensical reading maps to Unavailable never clamped`() {
         // Factory rejects total <= 0 — the reader's mapping yields null → Unavailable.
-        coreCountResult = CoreCount.create(0)
+        coreCountResult = CoreTiers.create(0, listOf(CoreTier(0, 1_800_000_000)))
         val holder = holder()
         holder.startReadCycle()
         executor.runLastPass()
@@ -203,7 +204,7 @@ class HomeStateHolderTest {
             memoryReader = MemoryReader { memoryResult },
             storageReader = StorageReader { storageResult },
             batteryReader = BatteryReader { batteryResult },
-            coreCountReader = CoreCountReader { coreCountResult },
+            coreTierReader = CoreTierReader { coreCountResult },
             applicationCounter = ApplicationCounter { inventoryResult },
             poster = poster,
             executorFactory = { executors.removeFirst() },
@@ -262,7 +263,7 @@ class HomeStateHolderTest {
             memoryReader = MemoryReader { memoryReads++; memoryResult },
             storageReader = StorageReader { storageReads++; storageResult },
             batteryReader = BatteryReader { batteryReads++; batteryResult },
-            coreCountReader = CoreCountReader { coreReads++; coreCountResult },
+            coreTierReader = CoreTierReader { coreReads++; coreCountResult },
             applicationCounter = ApplicationCounter { appReads++; inventoryResult },
             poster = poster,
             executorFactory = { executor },
@@ -365,7 +366,7 @@ class HomeStateHolderTest {
             memoryReader = MemoryReader { memoryResult },
             storageReader = StorageReader { storageResult },
             batteryReader = BatteryReader { batteryResult },
-            coreCountReader = CoreCountReader { coreCountResult },
+            coreTierReader = CoreTierReader { coreCountResult },
             applicationCounter = ApplicationCounter { inventoryResult },
             poster = poster,
             executorFactory = { executors.removeFirst() },

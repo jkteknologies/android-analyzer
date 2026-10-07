@@ -7,12 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.ApplicationCounter
 import com.jkteknologies.androidanalyzer.data.BatteryReader
-import com.jkteknologies.androidanalyzer.data.CoreCountReader
+import com.jkteknologies.androidanalyzer.data.CoreTierReader
 import com.jkteknologies.androidanalyzer.data.MemoryReader
 import com.jkteknologies.androidanalyzer.data.StorageReader
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
@@ -57,7 +57,7 @@ class HomeStateHolder(
     private val memoryReader: MemoryReader,
     private val storageReader: StorageReader,
     private val batteryReader: BatteryReader,
-    private val coreCountReader: CoreCountReader,
+    private val coreTierReader: CoreTierReader,
     private val applicationCounter: ApplicationCounter,
     private val poster: ResultPoster,
     private val executorFactory: () -> ExecutorService = { Executors.newSingleThreadExecutor() },
@@ -84,7 +84,7 @@ class HomeStateHolder(
         private set
     var battery: FigureUiState<BatteryReading> by mutableStateOf(FigureUiState.Loading)
         private set
-    var processor: FigureUiState<CoreCount> by mutableStateOf(FigureUiState.Loading)
+    var processor: FigureUiState<CoreTiers> by mutableStateOf(FigureUiState.Loading)
         private set
     var applications: FigureUiState<ApplicationInventory> by mutableStateOf(FigureUiState.Loading)
         private set
@@ -148,7 +148,7 @@ class HomeStateHolder(
             readAndPost(cycleEpoch, memoryReader::read) { memory = it }
             readAndPost(cycleEpoch, storageReader::read) { storage = it }
             readAndPost(cycleEpoch, batteryReader::read) { battery = it }
-            readAndPost(cycleEpoch, coreCountReader::read) { processor = it }
+            readAndPost(cycleEpoch, coreTierReader::read) { processor = it }
             readAndPost(cycleEpoch, applicationCounter::count) { applications = it }
             poster.post {
                 if (epoch == cycleEpoch) {

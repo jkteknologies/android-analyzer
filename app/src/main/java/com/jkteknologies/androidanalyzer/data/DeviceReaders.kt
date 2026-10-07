@@ -1,10 +1,13 @@
 package com.jkteknologies.androidanalyzer.data
 
+import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.androidanalyzer.domain.RefreshMode
 import com.jkteknologies.androidanalyzer.domain.ThemePreference
 
 /**
@@ -48,9 +51,36 @@ fun interface CoreCountReader {
     fun read(): CoreCount?
 }
 
+/**
+ * One sysfs cpufreq grouping (with total-count fallback) → the 004
+ * [CoreTiers], or `null` (R-04).
+ */
+fun interface CoreTierReader {
+    fun read(): CoreTiers?
+}
+
 /** Full package enumeration → [ApplicationInventory], or `null` (R-01). */
 fun interface ApplicationCounter {
     fun count(): ApplicationInventory?
+}
+
+/**
+ * Full package enumeration → the 004 domain [AppInventory] (sorted, marked),
+ * or `null` (004 R-01). One call = one enumeration, one usage-access check,
+ * and — only while access is granted — one `StorageStatsManager` query per
+ * package (contract app-inventory.md clause 1).
+ */
+fun interface InstalledAppReader {
+    fun read(): AppInventory?
+}
+
+/**
+ * One AppOps usage-access check (004 R-02): is the `PACKAGE_USAGE_STATS`
+ * appop currently granted to this app? The seam never requests the grant —
+ * the Settings page is UI wiring (clause 6).
+ */
+fun interface UsageAccessStatus {
+    fun granted(): Boolean
 }
 
 /**
@@ -63,4 +93,17 @@ interface ThemePreferenceStore {
 
     /** Persists immediately (apply()); idempotent. */
     fun save(preference: ThemePreference)
+}
+
+/**
+ * Persistence for the automatic-refresh selection (004 contract clause 5):
+ * the [ThemePreferenceStore] shape mirrored exactly — one string key in the
+ * same prefs file, corrupt values resolve to the default via `fromPersisted`.
+ */
+interface RefreshModeStore {
+    /** Current persisted mode; missing/corrupt value resolves to [RefreshMode.ON_DEMAND]. */
+    fun load(): RefreshMode
+
+    /** Persists immediately (apply()); idempotent. */
+    fun save(mode: RefreshMode)
 }

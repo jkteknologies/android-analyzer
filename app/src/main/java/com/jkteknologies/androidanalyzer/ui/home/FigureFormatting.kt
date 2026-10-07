@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.jkteknologies.androidanalyzer.R
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
 import java.text.NumberFormat
@@ -21,12 +21,12 @@ import java.util.Locale
  * strings (research.md R-12, R-14).
  */
 data class FigureStrings(
-    val memoryValue: String,       // "Available %1$s · Allocated %2$s"
-    val storageValue: String,      // "Free %1$s · Used %2$s"
-    val batteryValue: String,      // "%1$d%% · %2$s"
-    val applicationsValue: String, // "%1$s (%2$s)"
-    val charging: String,          // "Charging"
-    val notCharging: String,       // "Not charging"
+    val memoryValue: String,            // "Available %1$s · Allocated %2$s"
+    val storageValue: String,           // "Free %1$s · Used %2$s"
+    val batteryValue: String,           // "%1$d%% · %2$s"
+    val processorTiersValue: String,    // "%1$d cores: %2$s"
+    val charging: String,               // "Charging"
+    val notCharging: String,            // "Not charging"
 )
 
 /**
@@ -62,14 +62,34 @@ class FigureFormatting(
         if (reading.charging) strings.charging else strings.notCharging,
     )
 
-    fun processorValue(cores: CoreCount): String = count(cores.count)
+    /**
+     * V-A4b: a single tier renders as 002's plain core count (the fallback
+     * shape is indistinguishable from the old figure); multiple tiers render
+     * "N cores: a × f₁ + b × f₂" with one-decimal GHz via locale formatting.
+     */
+    fun processorValue(cores: CoreTiers): String =
+        if (cores.tiers.size == 1) {
+            count(cores.totalCount)
+        } else {
+            String.format(locale, strings.processorTiersValue, cores.totalCount, tiersString(cores))
+        }
 
-    fun applicationsValue(inventory: ApplicationInventory): String = String.format(
-        locale,
-        strings.applicationsValue,
-        count(inventory.nonSystemCount),
-        count(inventory.totalCount),
-    )
+    /** The "a × f GHz + b × f GHz" part — exact frequencies, never binned (R-04). */
+    private fun tiersString(cores: CoreTiers): String {
+        val ghz = NumberFormat.getInstance(locale).apply {
+            minimumFractionDigits = 1
+            maximumFractionDigits = 1
+        }
+        return cores.tiers.joinToString(" + ") { tier ->
+            "${count(tier.count)} × ${ghz.format(tier.maxFrequencyHz / 1_000_000_000.0)} GHz"
+        }
+    }
+
+    /** 004 H-1: the user-installed count as a plain locale-grouped number. */
+    fun userApplicationsValue(inventory: ApplicationInventory): String = count(inventory.nonSystemCount)
+
+    /** 004 H-1: the derived system count as a plain locale-grouped number. */
+    fun systemApplicationsValue(inventory: ApplicationInventory): String = count(inventory.systemCount)
 
     private fun count(value: Int): String = NumberFormat.getInstance(locale).format(value)
 }
@@ -83,7 +103,7 @@ fun rememberFigureFormatting(): FigureFormatting {
         memoryValue = stringResource(R.string.memory_value),
         storageValue = stringResource(R.string.storage_value),
         batteryValue = stringResource(R.string.battery_value),
-        applicationsValue = stringResource(R.string.applications_value),
+        processorTiersValue = stringResource(R.string.processor_tiers_value),
         charging = stringResource(R.string.charging_charging),
         notCharging = stringResource(R.string.charging_not_charging),
     )
