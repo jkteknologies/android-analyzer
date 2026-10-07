@@ -6,6 +6,7 @@ import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
 import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
+import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
 import com.jkteknologies.androidanalyzer.domain.StorageReading
 import com.jkteknologies.androidanalyzer.domain.RefreshMode
 import com.jkteknologies.androidanalyzer.domain.ThemePreference
@@ -81,6 +82,50 @@ fun interface InstalledAppReader {
  */
 fun interface UsageAccessStatus {
     fun granted(): Boolean
+}
+
+/**
+ * One batched privileged read (005 contracts/shizuku-memory.md clause 1–2) →
+ * the aggregated snapshot (package → summed PSS bytes; an absent key is an
+ * installed-but-not-running app; a `null` value is a per-app read failure),
+ * or `null` when the whole pass is unavailable (not authorized / binder dead
+ * / timeout / failure). One-shot per the 002 common clauses, with the
+ * documented stateful-connection exception living in the implementation
+ * (clause 6), not in this signature.
+ */
+fun interface AppMemoryReader {
+    fun read(): Map<String, Long?>?
+}
+
+/**
+ * One Shizuku state-ladder check (005 R-03): installed-check → binder ping →
+ * version floor → permission check, with every library throw collapsing to
+ * `NOT_RUNNING`. **Never throws** (contract clause 3); may do binder work, so
+ * it belongs on the background executor like the readers.
+ */
+fun interface ShizukuAccessStatus {
+    fun state(): ShizukuAccessState
+}
+
+/**
+ * Fire-and-forget authorization request (005 FR-005): Shizuku shows **its
+ * own** dialog; the result never appears as a return value — it arrives as a
+ * change-source event, and the actual grant state is re-read from
+ * [ShizukuAccessStatus]. Call from the UI thread.
+ */
+fun interface ShizukuAuthorizer {
+    fun request()
+}
+
+/**
+ * Shizuku change notifications (005 R-04, contract clause 7): binder
+ * received (sticky — the registration callback may fire immediately), binder
+ * dead, and permission-request results, collapsed into one `onChange`
+ * (already dispatched on the main thread by the library). The returned
+ * lambda unregisters everything.
+ */
+fun interface ShizukuChangeSource {
+    fun listen(onChange: () -> Unit): () -> Unit
 }
 
 /**
