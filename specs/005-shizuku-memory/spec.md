@@ -156,7 +156,8 @@ Delivers dependable behavior on its own.
 
 ## Assumptions
 
-- Shizuku (open source, available on F-Droid) is the user-chosen elevated-access
+- Shizuku (open source, Apache-2.0; distributed via Google Play, GitHub, and the
+  IzzyOnDroid repo — not the default F-Droid repo) is the user-chosen elevated-access
   mechanism; obtaining, installing, starting, and keeping Shizuku running are the
   user's actions in Shizuku's own application. The analyzer never starts or updates
   Shizuku programmatically (also a battery-and-background-work decision, Constitution

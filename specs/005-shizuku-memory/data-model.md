@@ -20,7 +20,7 @@ The guidance matrix's value (FR-004 plus the spec's Outdated edge case, R-03):
 
 | Value | Meaning | Guidance (details-guidance.md §G) |
 |-------|---------|-----------------------------------|
-| `NOT_INSTALLED` | No Shizuku package on the device | Text: what Shizuku is, free on F-Droid, the three steps |
+| `NOT_INSTALLED` | No Shizuku package on the device | Text: what Shizuku is, free (shizuku.rikka.app), the three steps |
 | `NOT_RUNNING` | Installed, binder dead (routine after reboot) | Text + "Open Shizuku" |
 | `OUTDATED` | Server older than v13 (incl. pre-v11) | Text: update Shizuku, then return |
 | `AWAITING_AUTHORIZATION` | Running, our package not granted | Text + "Allow access" (Shizuku's own dialog) |

@@ -34,8 +34,8 @@ Consolidated verdict up front:
 library family versions together). The client library is **MIT** (verified in the POM
 and repo `LICENSE`), so it is F-Droid-compatible and adds no copyleft obligation to the
 app. The Shizuku *app/server* is Apache-2.0 (with trademark-ish reservations on name and
-icon, which we do not reuse) and is itself distributed on F-Droid — consistent with the
-spec's assumption that users obtain it there.
+icon, which we do not reuse) and is distributed via Google Play, GitHub, and the
+IzzyOnDroid repo (not the default F-Droid repo) — users obtain it from one of those.
 
 **Rationale**:
 
@@ -369,7 +369,7 @@ row, above the filter), rendering from `holder.shizukuAccess`:
 | State | Text (new string resource) | Action |
 |---|---|---|
 | `null` (not yet known) | — (row hidden) | — |
-| `NOT_INSTALLED` | `shizuku_hint_not_installed` — names Shizuku, that it is free on F-Droid, and the three steps (install, start, allow) | none |
+| `NOT_INSTALLED` | `shizuku_hint_not_installed` — names Shizuku, that it is free (shizuku.rikka.app), and the three steps (install, start, allow) | none |
 | `OUTDATED` | `shizuku_hint_outdated` — update Shizuku, then return | none |
 | `NOT_RUNNING` | `shizuku_hint_not_running` | `shizuku_open` → `getLaunchIntentForPackage(SHIZUKU_PACKAGE)` |
 | `AWAITING_AUTHORIZATION` | `shizuku_hint_awaiting` | `shizuku_allow` → `holder.requestAuthorization()` |

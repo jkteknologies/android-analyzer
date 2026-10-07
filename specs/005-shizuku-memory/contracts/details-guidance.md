@@ -40,6 +40,6 @@ renders as a normal value). Verified by AGP lint + the quickstart manual matrix 
 ## S · Strings (R-09)
 
 New resources only; no existing string changes: `shizuku_hint_not_installed` (names
-Shizuku, free on F-Droid, the install → start → allow steps), `shizuku_hint_outdated`,
+Shizuku, free via shizuku.rikka.app, the install → start → allow steps), `shizuku_hint_outdated`,
 `shizuku_hint_not_running`, `shizuku_hint_awaiting`, `shizuku_hint_authorized`, and the
 two labels `shizuku_open`, `shizuku_allow`. English only (002 formatting assumption).

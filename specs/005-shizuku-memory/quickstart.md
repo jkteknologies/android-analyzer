@@ -15,8 +15,8 @@ here.
 - Install the analyzer: `./gradlew installDebug` (debug APK, no release signing here).
 - **Shizuku setup on the test device** (the feature's external dependency, spec
   assumption):
-  1. Sideload Shizuku v13.6.0+ (F-Droid APK or GitHub release): `adb install
-     shizuku.apk`.
+  1. Sideload Shizuku v13.6.0+ (GitHub release APK, Google Play, or the IzzyOnDroid
+     repo — not the default F-Droid repo): `adb install shizuku.apk`.
   2. Start the Shizuku server via adb (the documented path for development):
      `adb shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh`
      (on the emulator the path is `/storage/emulated/0/Android/data/...` — same file).
@@ -45,7 +45,7 @@ no-refresh guard, and request delegation — all on the JVM, no Shizuku.
 
 | # | Scenario | Steps | Expected |
 |---|----------|-------|----------|
-| M-1 | No Shizuku: honest default (US2-1, SC-002) | With Shizuku not installed, open the app → Details | One guidance row: Shizuku named, free on F-Droid, the three steps; every memory slot shows "Not available"; list, marks, filter, counts, storage figures, row tap, pull-to-refresh all work exactly as in 004 |
+| M-1 | No Shizuku: honest default (US2-1, SC-002) | With Shizuku not installed, open the app → Details | One guidance row: Shizuku named, free (shizuku.rikka.app), the three steps; every memory slot shows "Not available"; list, marks, filter, counts, storage figures, row tap, pull-to-refresh all work exactly as in 004 |
 | M-2 | Full flow: install → start → allow → figures (US1-1..4, SC-001/SC-003) | Set up Shizuku (§0), open Details, tap "Allow access", confirm in Shizuku's dialog | After the dialog: figures appear **by themselves** (no restart, no manual pull — FR-007); spot-check 3 apps against `adb shell dumpsys <pkg> meminfo`'s TOTAL PSS — equal within display rounding, never a wrong number; an installed-but-not-running app (verify via the checkin process list) shows 0, not "Not available" |
 | M-3 | Multi-process summing (US1-3, FR-002) | Pick a multi-process app (e.g. one with `:service` processes in `dumpsys meminfo --checkin`) | The analyzer's figure equals the sum of that app's process PSS entries (≈ the device report's app TOTAL) |
 | M-4 | Guidance per state + open action (US2-2..3) | With Shizuku stopped (`am force-stop`), open Details and read the row; tap "Open Shizuku"; start it there; return | "Not running" text + button; the button opens the Shizuku app; on return the next read shows the new state (authorized → figures) without an app restart |
