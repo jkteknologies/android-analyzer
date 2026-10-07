@@ -22,20 +22,23 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.jkteknologies.androidanalyzer.R
+import com.jkteknologies.androidanalyzer.domain.RefreshMode
 import com.jkteknologies.androidanalyzer.domain.ThemePreference
 
 /**
- * The settings screen (tasks T023/T026; ui-contracts S-1..S-6): exactly ONE
- * setting — Theme — with exactly three options (Light / Dark / System default),
- * no other sections, no placeholders, no "coming soon". The selected option
- * raises [onPreferenceSelected]; the host persists and applies it immediately
- * (FR-009/FR-010). Rows expose selectable semantics with announced state
- * (S-6, A-1); text is sp-scaled and rows wrap — no fixed heights (A-2).
+ * The settings screen (002 S-1..S-6; 004 contracts/refresh-mode.md S-1..S-4):
+ * exactly TWO sections — Theme (Light / Dark / System default, untouched from
+ * 002) and Automatic refresh (On demand / Every 30 seconds / Every minute /
+ * Every 5 minutes). A tap raises the selection callback; the host persists
+ * first then applies it immediately. Rows expose selectable semantics with
+ * announced state (S-6); text is sp-scaled and rows wrap — no fixed heights.
  */
 @Composable
 fun SettingsScreen(
     selectedPreference: ThemePreference,
     onPreferenceSelected: (ThemePreference) -> Unit,
+    selectedRefreshMode: RefreshMode,
+    onRefreshModeSelected: (RefreshMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -69,10 +72,35 @@ fun SettingsScreen(
             selected = selectedPreference == ThemePreference.SYSTEM,
             onClick = { onPreferenceSelected(ThemePreference.SYSTEM) },
         )
+        Text(
+            text = stringResource(R.string.refresh_mode_label),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+        )
+        ThemeOptionRow(
+            label = stringResource(R.string.refresh_mode_on_demand),
+            selected = selectedRefreshMode == RefreshMode.ON_DEMAND,
+            onClick = { onRefreshModeSelected(RefreshMode.ON_DEMAND) },
+        )
+        ThemeOptionRow(
+            label = stringResource(R.string.refresh_mode_30s),
+            selected = selectedRefreshMode == RefreshMode.THIRTY_SECONDS,
+            onClick = { onRefreshModeSelected(RefreshMode.THIRTY_SECONDS) },
+        )
+        ThemeOptionRow(
+            label = stringResource(R.string.refresh_mode_1min),
+            selected = selectedRefreshMode == RefreshMode.ONE_MINUTE,
+            onClick = { onRefreshModeSelected(RefreshMode.ONE_MINUTE) },
+        )
+        ThemeOptionRow(
+            label = stringResource(R.string.refresh_mode_5min),
+            selected = selectedRefreshMode == RefreshMode.FIVE_MINUTES,
+            onClick = { onRefreshModeSelected(RefreshMode.FIVE_MINUTES) },
+        )
     }
 }
 
-/** One selectable theme option: row-level selectable semantics, radio visuals (S-6). */
+/** One selectable option row (S-1/S-6): shared by the theme and refresh sections. */
 @Composable
 private fun ThemeOptionRow(
     label: String,

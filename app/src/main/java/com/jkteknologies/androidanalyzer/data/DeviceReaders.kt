@@ -6,6 +6,7 @@ import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.androidanalyzer.domain.RefreshMode
 import com.jkteknologies.androidanalyzer.domain.ThemePreference
 
 /**
@@ -83,4 +84,17 @@ interface ThemePreferenceStore {
 
     /** Persists immediately (apply()); idempotent. */
     fun save(preference: ThemePreference)
+}
+
+/**
+ * Persistence for the automatic-refresh selection (004 contract clause 5):
+ * the [ThemePreferenceStore] shape mirrored exactly — one string key in the
+ * same prefs file, corrupt values resolve to the default via `fromPersisted`.
+ */
+interface RefreshModeStore {
+    /** Current persisted mode; missing/corrupt value resolves to [RefreshMode.ON_DEMAND]. */
+    fun load(): RefreshMode
+
+    /** Persists immediately (apply()); idempotent. */
+    fun save(mode: RefreshMode)
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
 import com.jkteknologies.androidanalyzer.data.SharedPreferencesThemeStore
+import com.jkteknologies.androidanalyzer.data.SharedPreferencesRefreshModeStore
 import com.jkteknologies.androidanalyzer.ui.AnalyzerApp
 import com.jkteknologies.androidanalyzer.ui.details.DetailsScreen
 import com.jkteknologies.androidanalyzer.ui.details.DetailsStateHolder
@@ -31,8 +32,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val themeStore = SharedPreferencesThemeStore(this)
+        val refreshModeStore = SharedPreferencesRefreshModeStore(this)
         setContent {
             var themePreference by remember { mutableStateOf(themeStore.load()) }
+            var refreshMode by remember { mutableStateOf(refreshModeStore.load()) }
             AppTheme(preference = themePreference) {
                 val readers = remember { AndroidDeviceReaders(this@MainActivity) }
                 val holder = remember {
@@ -53,6 +56,9 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 AnalyzerApp(
+                    refreshMode = refreshMode,
+                    refreshHome = holder::refresh,
+                    refreshDetails = detailsHolder::refresh,
                     home = { onOpenApplications ->
                         HomeScreen(holder, onOpenApplications)
                     },
@@ -73,6 +79,13 @@ class MainActivity : ComponentActivity() {
                             onPreferenceSelected = { selection ->
                                 themeStore.save(selection)
                                 themePreference = selection
+                            },
+                            selectedRefreshMode = refreshMode,
+                            onRefreshModeSelected = { selection ->
+                                // S-2/W-1: persist first, then update the lifted state —
+                                // the same save-then-apply order as the theme (002 T-027).
+                                refreshModeStore.save(selection)
+                                refreshMode = selection
                             },
                         )
                     },

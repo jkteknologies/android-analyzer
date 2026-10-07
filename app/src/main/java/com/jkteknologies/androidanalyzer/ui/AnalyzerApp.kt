@@ -12,17 +12,23 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
+import com.jkteknologies.androidanalyzer.domain.RefreshMode
 import com.jkteknologies.androidanalyzer.R
+import kotlinx.coroutines.delay
 
 /**
  * The three destinations of the hand-rolled shell (004 data-model §8, R-05):
@@ -47,6 +53,9 @@ enum class Destination {
  */
 @Composable
 fun AnalyzerApp(
+    refreshMode: RefreshMode,
+    refreshHome: () -> Unit,
+    refreshDetails: () -> Unit,
     home: @Composable (onOpenApplications: (AppCategoryFilter) -> Unit) -> Unit,
     details: @Composable (pendingFilter: AppCategoryFilter?, onPendingFilterConsumed: () -> Unit) -> Unit,
     settings: @Composable () -> Unit,
@@ -61,6 +70,32 @@ fun AnalyzerApp(
      * switches never touch the filter.
      */
     var pendingDetailsFilter by remember { mutableStateOf<AppCategoryFilter?>(null) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    /**
+     * The auto-refresh ticker (T-1..T-5, FR-014..FR-017): one shell-owned
+     * loop that sleeps the interval and refreshes the **visible** screen only
+     * (SETTINGS → nothing). `repeatOnLifecycle(RESUMED)` gates it on
+     * visibility — no tick below RESUMED, zero background work (Constitution
+     * IX); ON_DEMAND (`intervalMillis == null`) leaves it inert while manual
+     * pull-to-refresh stays available in every mode; keying on mode and
+     * destination applies changes at the next tick boundary — no catch-up
+     * burst.
+     */
+    LaunchedEffect(refreshMode, destination) {
+        val interval = refreshMode.intervalMillis ?: return@LaunchedEffect
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                delay(interval)
+                when (destination) {
+                    Destination.HOME -> refreshHome()
+                    Destination.DETAILS -> refreshDetails()
+                    Destination.SETTINGS -> Unit
+                }
+            }
+        }
+    }
 
     BackHandler(enabled = destination != Destination.HOME) {
         destination = Destination.HOME

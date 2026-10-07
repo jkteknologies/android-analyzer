@@ -61,4 +61,11 @@
     <string name="usage_access_hint">Usage access is off. Grant it to see how much storage each app uses.</string>
     <string name="usage_access_grant">Grant access</string>
     <string name="details_empty">No applications in the %1$s list</string>
+
+    <!-- Automatic refresh setting (004 FR-014/FR-015, S-1: exactly four options) -->
+    <string name="refresh_mode_label">Automatic refresh</string>
+    <string name="refresh_mode_on_demand">On demand</string>
+    <string name="refresh_mode_30s">Every 30 seconds</string>
+    <string name="refresh_mode_1min">Every minute</string>
+    <string name="refresh_mode_5min">Every 5 minutes</string>
 </resources>
