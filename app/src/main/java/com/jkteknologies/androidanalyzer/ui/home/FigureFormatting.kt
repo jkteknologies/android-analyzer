@@ -24,7 +24,6 @@ data class FigureStrings(
     val memoryValue: String,       // "Available %1$s · Allocated %2$s"
     val storageValue: String,      // "Free %1$s · Used %2$s"
     val batteryValue: String,      // "%1$d%% · %2$s"
-    val applicationsValue: String, // "%1$s (%2$s)"
     val charging: String,          // "Charging"
     val notCharging: String,       // "Not charging"
 )
@@ -64,12 +63,11 @@ class FigureFormatting(
 
     fun processorValue(cores: CoreCount): String = count(cores.count)
 
-    fun applicationsValue(inventory: ApplicationInventory): String = String.format(
-        locale,
-        strings.applicationsValue,
-        count(inventory.nonSystemCount),
-        count(inventory.totalCount),
-    )
+    /** 004 H-1: the user-installed count as a plain locale-grouped number. */
+    fun userApplicationsValue(inventory: ApplicationInventory): String = count(inventory.nonSystemCount)
+
+    /** 004 H-1: the derived system count as a plain locale-grouped number. */
+    fun systemApplicationsValue(inventory: ApplicationInventory): String = count(inventory.systemCount)
 
     private fun count(value: Int): String = NumberFormat.getInstance(locale).format(value)
 }
@@ -83,7 +81,6 @@ fun rememberFigureFormatting(): FigureFormatting {
         memoryValue = stringResource(R.string.memory_value),
         storageValue = stringResource(R.string.storage_value),
         batteryValue = stringResource(R.string.battery_value),
-        applicationsValue = stringResource(R.string.applications_value),
         charging = stringResource(R.string.charging_charging),
         notCharging = stringResource(R.string.charging_not_charging),
     )

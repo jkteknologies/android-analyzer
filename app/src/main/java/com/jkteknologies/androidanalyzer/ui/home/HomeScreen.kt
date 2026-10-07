@@ -1,5 +1,6 @@
 package com.jkteknologies.androidanalyzer.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,15 +36,18 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.jkteknologies.androidanalyzer.R
+import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
 
 /**
- * The device-overview home screen (task T014; ui-contracts H-1..H-9).
+ * The device-overview home screen (002 ui-contracts H-1..H-9; 004 H-1/H-2).
  *
- * Exactly five figure groups — Memory, Internal storage, Battery, Processor,
- * Applications (FR-001/FR-003). The layout renders immediately; each figure
+ * Five figure groups — Memory, Internal storage, Battery, Processor, and
+ * since 004 the applications pair: **User applications** and **System
+ * applications** as two separate tappable entries (FR-011) sharing the one
+ * applications figure state. The layout renders immediately; each figure
  * independently shows the neutral placeholder, its formatted value, or the
- * distinct "Not available" indication (FR-012/FR-014).
+ * distinct "Not available" indication.
  *
  * Read-cycle triggers (FR-011, R-10): `ON_RESUME` (launch and background
  * resume) via a [DefaultLifecycleObserver], plus entering composition while
@@ -51,21 +55,25 @@ import com.jkteknologies.androidanalyzer.domain.FigureUiState
  * observer detaches and the executor shuts down on dispose — returning to
  * home starts the next cycle on a fresh executor.
  *
- * Pull-to-refresh (003 task T004; refresh-interaction W-1..W-4): the scrollable
+ * Pull-to-refresh (003 refresh-interaction W-1..W-4): the scrollable
  * figure column is wrapped in a [PullToRefreshBox] from *outside*, so the
  * gesture arms only while the content is scrolled to its top (FR-009) and
  * leaves the system's top-edge gestures untouched (FR-008). The default
  * Material3 indicator follows [HomeStateHolder.isRefreshing]; releasing past
  * the trigger distance calls [HomeStateHolder.refresh] (FR-001/FR-002).
  *
- * Accessibility (003 task T009; W-5): the figure column exposes a "Refresh
+ * Accessibility (003 W-5): the figure column exposes a "Refresh
  * figures" custom accessibility action — a screen-reader trigger path that
  * does not depend on the touch gesture — and a polite live-region status node
  * announces "Refreshing figures" / "Figures refreshed" as the cycle runs and
- * completes (FR-013, SC-006).
+ * completes.
  */
 @Composable
-fun HomeScreen(holder: HomeStateHolder, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    holder: HomeStateHolder,
+    onOpenApplications: (AppCategoryFilter) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner, holder) {
@@ -161,10 +169,20 @@ fun HomeScreen(holder: HomeStateHolder, modifier: Modifier = Modifier) {
                 state = holder.processor,
                 formatValue = formatting::processorValue,
             )
+            // 004 H-1/H-2: the applications figure as two tappable entries sharing
+            // the one state — both placeholders while Loading, both indications
+            // while Unavailable, the two counts when Available.
             FigureRow(
-                label = stringResource(R.string.figure_applications),
+                label = stringResource(R.string.figure_user_applications),
                 state = holder.applications,
-                formatValue = formatting::applicationsValue,
+                formatValue = formatting::userApplicationsValue,
+                onClick = { onOpenApplications(AppCategoryFilter.USER) },
+            )
+            FigureRow(
+                label = stringResource(R.string.figure_system_applications),
+                state = holder.applications,
+                formatValue = formatting::systemApplicationsValue,
+                onClick = { onOpenApplications(AppCategoryFilter.SYSTEM) },
             )
         }
     }
@@ -175,12 +193,15 @@ fun HomeScreen(holder: HomeStateHolder, modifier: Modifier = Modifier) {
  * screen-reader semantics "label: value-or-indication" (H-8, FR-015). The
  * unavailability indication is announced as text in the value slot —
  * distinctly from any real value, never instead of one that exists.
+ * A non-null [onClick] makes the row tappable with row-level clickable
+ * semantics (004 H-2).
  */
 @Composable
 private fun <T> FigureRow(
     label: String,
     state: FigureUiState<T>,
     formatValue: (T) -> String,
+    onClick: (() -> Unit)? = null,
 ) {
     val placeholder = stringResource(R.string.figure_placeholder)
     val unavailable = stringResource(R.string.figure_unavailable)
@@ -199,6 +220,7 @@ private fun <T> FigureRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .semantics(mergeDescendants = true) { this.contentDescription = contentDescription },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {

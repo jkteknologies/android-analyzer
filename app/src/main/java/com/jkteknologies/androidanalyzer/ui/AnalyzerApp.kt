@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
 import com.jkteknologies.androidanalyzer.R
 
 /**
@@ -46,11 +47,20 @@ enum class Destination {
  */
 @Composable
 fun AnalyzerApp(
-    home: @Composable () -> Unit,
-    details: @Composable () -> Unit,
+    home: @Composable (onOpenApplications: (AppCategoryFilter) -> Unit) -> Unit,
+    details: @Composable (pendingFilter: AppCategoryFilter?, onPendingFilterConsumed: () -> Unit) -> Unit,
     settings: @Composable () -> Unit,
 ) {
     var destination by remember { mutableStateOf(Destination.HOME) }
+
+    /**
+     * The Home → Details arrival directive (H-3, FR-012): set together with
+     * `destination = DETAILS` by a Home entry tap, applied once by the
+     * details slot via `applyPendingFilter` — overriding any previously
+     * chosen filter — then cleared. `null` means "no directive": plain tab
+     * switches never touch the filter.
+     */
+    var pendingDetailsFilter by remember { mutableStateOf<AppCategoryFilter?>(null) }
 
     BackHandler(enabled = destination != Destination.HOME) {
         destination = Destination.HOME
@@ -65,8 +75,11 @@ fun AnalyzerApp(
                 .padding(innerPadding),
         ) {
             when (destination) {
-                Destination.HOME -> home()
-                Destination.DETAILS -> details()
+                Destination.HOME -> home { filter ->
+                    pendingDetailsFilter = filter
+                    destination = Destination.DETAILS
+                }
+                Destination.DETAILS -> details(pendingDetailsFilter) { pendingDetailsFilter = null }
                 Destination.SETTINGS -> settings()
             }
         }

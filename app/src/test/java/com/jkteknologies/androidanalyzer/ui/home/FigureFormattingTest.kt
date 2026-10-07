@@ -21,7 +21,6 @@ class FigureFormattingTest {
         memoryValue = "Available %1\$s · Allocated %2\$s",
         storageValue = "Free %1\$s · Used %2\$s",
         batteryValue = "%1\$d%% · %2\$s",
-        applicationsValue = "%1\$s (%2\$s)",
         charging = "Charging",
         notCharging = "Not charging",
     )
@@ -59,11 +58,19 @@ class FigureFormattingTest {
     }
 
     @Test
-    fun `applications value composes the N (M) template with grouped counts`() {
+    fun `user applications value is the grouped non-system count`() { // 004 T015
         val inventory = ApplicationInventory.create(nonSystemCount = 36, totalCount = 121)!!
-        assertEquals("36 (121)", formatting().applicationsValue(inventory))
+        assertEquals("36", formatting().userApplicationsValue(inventory))
         val large = ApplicationInventory.create(nonSystemCount = 1234, totalCount = 1_234_567)!!
-        assertEquals("1,234 (1,234,567)", formatting().applicationsValue(large))
-        assertEquals("1.234 (1.234.567)", formatting(Locale.GERMANY).applicationsValue(large))
+        assertEquals("1,234", formatting().userApplicationsValue(large))
+        assertEquals("1.234", formatting(Locale.GERMANY).userApplicationsValue(large))
+    }
+
+    @Test
+    fun `system applications value is the grouped derived system count`() { // 004 T015
+        val inventory = ApplicationInventory.create(nonSystemCount = 36, totalCount = 121)!!
+        assertEquals("85", formatting().systemApplicationsValue(inventory))
+        val none = ApplicationInventory.create(nonSystemCount = 5, totalCount = 5)!!
+        assertEquals("0", formatting().systemApplicationsValue(none))
     }
 }

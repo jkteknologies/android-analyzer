@@ -53,8 +53,20 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 AnalyzerApp(
-                    home = { HomeScreen(holder) },
-                    details = { DetailsScreen(detailsHolder) },
+                    home = { onOpenApplications ->
+                        HomeScreen(holder, onOpenApplications)
+                    },
+                    details = { pendingFilter, onPendingFilterConsumed ->
+                        // H-3 consumption: apply the arrival directive synchronously
+                        // before the screen composes — no full-list flash on arrival —
+                        // then clear the shell slot (once). Plain recomposition with a
+                        // null directive never touches the filter.
+                        pendingFilter?.let {
+                            detailsHolder.applyPendingFilter(it)
+                            onPendingFilterConsumed()
+                        }
+                        DetailsScreen(detailsHolder)
+                    },
                     settings = {
                         SettingsScreen(
                             selectedPreference = themePreference,
