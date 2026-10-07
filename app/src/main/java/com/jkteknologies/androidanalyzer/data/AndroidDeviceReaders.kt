@@ -1,13 +1,20 @@
 package com.jkteknologies.androidanalyzer.data
 
 import android.app.ActivityManager
+import android.app.AppOpsManager
+import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.os.BatteryManager
 import android.os.Environment
+import android.os.Process
 import android.os.StatFs
+import android.os.storage.StorageManager
+import com.jkteknologies.androidanalyzer.domain.AppClassification
+import com.jkteknologies.androidanalyzer.domain.AppInventory
+import com.jkteknologies.androidanalyzer.domain.InstalledApp
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
@@ -77,5 +84,61 @@ class AndroidDeviceReaders(context: Context) {
         val apps: List<ApplicationInfo> = appContext.packageManager.getInstalledApplications(0)
         val nonSystem = apps.count { !isSystemApplication(it.flags) }
         ApplicationInventory.create(nonSystemCount = nonSystem, totalCount = apps.size)
+    }
+
+    /**
+     * Usage-access appop check (004 R-02): reflects only the current grant
+     * state — the app declares `PACKAGE_USAGE_STATS`, the user flips it on the
+     * Settings usage-access page. `unsafeCheckOpNoThrow` reports without
+     * throwing.
+     */
+    val usageAccessStatus: UsageAccessStatus = UsageAccessStatus {
+        val appOps = appContext.getSystemService(AppOpsManager::class.java)
+        val mode = appOps.unsafeCheckOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            appContext.applicationInfo.uid,
+            appContext.packageName,
+        )
+        mode == AppOpsManager.MODE_ALLOWED
+    }
+
+    /**
+     * Full inventory read (004 R-01/R-02, contract clauses 1–2): one
+     * `getInstalledApplications(0)` enumeration; display names via
+     * `loadLabel`, classification through the shared [isSystemApplication]
+     * bit test — and only while usage access is granted, one
+     * `StorageStatsManager.queryStatsForPackage` per package (code + data +
+     * cache) from the same snapshot. Without the grant no per-package storage
+     * call is made and every `storageBytes` is `null`; a granted but failing
+     * per-package query leaves that one app's figure `null` without failing
+     * the inventory.
+     */
+    val installedAppReader: InstalledAppReader = InstalledAppReader {
+        val usageGranted = usageAccessStatus.granted()
+        val storageStats =
+            if (usageGranted) appContext.getSystemService(StorageStatsManager::class.java) else null
+        val user = Process.myUserHandle()
+        val apps: List<InstalledApp?> = appContext.packageManager.getInstalledApplications(0).map { info ->
+            val storageBytes = storageStats?.runCatching {
+                queryStatsForPackage(StorageManager.UUID_DEFAULT, info.packageName, user)
+                    .let { it.appBytes + it.dataBytes + it.cacheBytes }
+            }?.getOrNull()
+            InstalledApp.create(
+                packageName = info.packageName,
+                displayName = info.loadLabel(appContext.packageManager).toString(),
+                classification = if (isSystemApplication(info.flags)) {
+                    AppClassification.SYSTEM
+                } else {
+                    AppClassification.USER
+                },
+                storageBytes = storageBytes,
+                // ponytail: current Android has no public per-app memory read (R-03) —
+                // the slot stays null so a future platform API lights it up without a UI change.
+                memoryBytes = null,
+            )
+        }
+        // One invalid entry fails the whole read (never-clamp, 004 FR-010) — no partial inventories.
+        if (apps.any { it == null }) return@InstalledAppReader null
+        AppInventory.create(apps.filterNotNull())
     }
 }

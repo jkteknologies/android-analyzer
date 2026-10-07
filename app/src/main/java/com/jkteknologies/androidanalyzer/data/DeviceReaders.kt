@@ -1,5 +1,6 @@
 package com.jkteknologies.androidanalyzer.data
 
+import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
@@ -51,6 +52,25 @@ fun interface CoreCountReader {
 /** Full package enumeration → [ApplicationInventory], or `null` (R-01). */
 fun interface ApplicationCounter {
     fun count(): ApplicationInventory?
+}
+
+/**
+ * Full package enumeration → the 004 domain [AppInventory] (sorted, marked),
+ * or `null` (004 R-01). One call = one enumeration, one usage-access check,
+ * and — only while access is granted — one `StorageStatsManager` query per
+ * package (contract app-inventory.md clause 1).
+ */
+fun interface InstalledAppReader {
+    fun read(): AppInventory?
+}
+
+/**
+ * One AppOps usage-access check (004 R-02): is the `PACKAGE_USAGE_STATS`
+ * appop currently granted to this app? The seam never requests the grant —
+ * the Settings page is UI wiring (clause 6).
+ */
+fun interface UsageAccessStatus {
+    fun granted(): Boolean
 }
 
 /**

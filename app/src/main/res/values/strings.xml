@@ -47,4 +47,18 @@
     <string name="refresh_action">Refresh figures</string>
     <string name="refresh_status_refreshing">Refreshing figures</string>
     <string name="refresh_status_done">Figures refreshed</string>
+
+    <!-- Details screen (004 R-10: title, filter labels, marks, per-app figure
+         templates, usage-access hint + grant button, per-filter empty state) -->
+    <string name="details_title">Details</string>
+    <string name="filter_all">All</string>
+    <string name="filter_user">User</string>
+    <string name="filter_system">System</string>
+    <string name="app_mark_system">System</string>
+    <string name="app_mark_user">User</string>
+    <string name="app_storage_value">Storage %1$s</string>
+    <string name="app_memory_value">Memory %1$s</string>
+    <string name="usage_access_hint">Usage access is off. Grant it to see how much storage each app uses.</string>
+    <string name="usage_access_grant">Grant access</string>
+    <string name="details_empty">No applications in the %1$s list</string>
 </resources>

@@ -14,6 +14,18 @@
         tools:ignore="QueryAllPackagesPermission" />
 
     <!--
+      Sole permission added by feature 004 (FR-006/FR-008, research.md R-02,
+      Constitution VIII): per-app storage figures read through
+      StorageStatsManager, which requires the PACKAGE_USAGE_STATS appop. This
+      is an install-time-silent special-access declaration — it grants nothing
+      by itself; the user enables it via Settings > Usage access, the same
+      reviewed-declaration pattern as QUERY_ALL_PACKAGES above.
+    -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!--
       The two remove directives below strip the app-defined
       DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION that androidx.core injects through
       manifest merging — this app registers no receivers, so that permission

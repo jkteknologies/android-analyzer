@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
 import com.jkteknologies.androidanalyzer.data.SharedPreferencesThemeStore
 import com.jkteknologies.androidanalyzer.ui.AnalyzerApp
+import com.jkteknologies.androidanalyzer.ui.details.DetailsScreen
+import com.jkteknologies.androidanalyzer.ui.details.DetailsStateHolder
 import com.jkteknologies.androidanalyzer.ui.home.HomeScreen
 import com.jkteknologies.androidanalyzer.ui.home.HomeStateHolder
 import com.jkteknologies.androidanalyzer.ui.settings.SettingsScreen
@@ -32,8 +34,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             var themePreference by remember { mutableStateOf(themeStore.load()) }
             AppTheme(preference = themePreference) {
+                val readers = remember { AndroidDeviceReaders(this@MainActivity) }
                 val holder = remember {
-                    val readers = AndroidDeviceReaders(this@MainActivity)
                     HomeStateHolder(
                         memoryReader = readers.memoryReader,
                         storageReader = readers.storageReader,
@@ -43,9 +45,16 @@ class MainActivity : ComponentActivity() {
                         poster = HomeStateHolder.mainThreadPoster(),
                     )
                 }
+                val detailsHolder = remember {
+                    DetailsStateHolder(
+                        installedAppReader = readers.installedAppReader,
+                        usageAccessStatus = readers.usageAccessStatus,
+                        poster = HomeStateHolder.mainThreadPoster(),
+                    )
+                }
                 AnalyzerApp(
                     home = { HomeScreen(holder) },
-                    details = { }, // 004 T003 placeholder — T010 installs the Details screen
+                    details = { DetailsScreen(detailsHolder) },
                     settings = {
                         SettingsScreen(
                             selectedPreference = themePreference,
