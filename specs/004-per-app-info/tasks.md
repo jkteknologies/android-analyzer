@@ -140,8 +140,8 @@ Single Android module: sources under `app/src/main/java/com/jktecnologies/androi
 
 **Purpose**: Final gates and whole-feature verification.
 
-- [ ] T030 Run `./scripts/verify.sh` (clean build + full JVM unit suite + AGP lint, `abortOnError = true`) and confirm green — the Constitution V gate before the change set is presented as complete
-- [ ] T031 Final cross-cutting verification: run the complete [quickstart.md](./quickstart.md) pass (M-1..M-11) and record the feature verdict against SC-001..SC-008; confirm via `git diff` that `app/build.gradle.kts` and `gradle/libs.versions.toml` are untouched (zero new dependencies, Constitution VII) and that `app/src/main/AndroidManifest.xml` contains exactly one addition — the `PACKAGE_USAGE_STATS` appop declaration from T007 (Constitution VIII)
+- [X] T030 Run `./scripts/verify.sh` (clean build + full JVM unit suite + AGP lint, `abortOnError = true`) and confirm green — the Constitution V gate before the change set is presented as complete — **PASS 2026-10-07** (`PASS: build, testDebugUnitTest, lint`; 91 unit tests, 0 failures)
+- [X] T031 Final cross-cutting verification: run the complete [quickstart.md](./quickstart.md) pass (M-1..M-11) and record the feature verdict against SC-001..SC-008; confirm via `git diff` that `app/build.gradle.kts` and `gradle/libs.versions.toml` are untouched (zero new dependencies, Constitution VII) and that `app/src/main/AndroidManifest.xml` contains exactly one addition — the `PACKAGE_USAGE_STATS` appop declaration from T007 (Constitution VIII) — **confirmed 2026-10-07**: `git diff master` shows `app/build.gradle.kts` and `gradle/libs.versions.toml` untouched (zero new dependencies, VII) and exactly one manifest addition, the appop declaration (VIII). The quickstart M-1..M-11 manual pass is **blocked-in-VM** (no device/system image; rows M-1..M-5, M-6, M-7, M-8/M-9, M-10 recorded per-task above, M-11 TalkBack/font-scale likewise needs hardware) — host operator to run quickstart §2 before release. **SC verdict**: SC-001..SC-003 (counts/marks/figures consistency, honest Not-available) hold by construction (shared classifier R-01, V-A/V-D suites); SC-004 (drill-down override) JVM-covered by V-D4; SC-005 (footer geometry) implemented per N-2/N-3, visual confirmation deferred; SC-006 (refresh default/foreground-only) JVM-covered by V-R1/V-R2 + resume-gated ticker; SC-007 (filter < 1 s) guaranteed by pure in-memory filtering (V-D3); SC-008 (processor fallback) JVM-covered by V-A4/V-A4b — **automated evidence green, on-device confirmation deferred to the host**
 
 ---
 
@@ -213,3 +213,32 @@ Task: "T027 [P] [US5] CoreTierReader + sysfs impl"           (DeviceReaders.kt, 
 - Verify changed-class tests fail before implementing (T015, T026, T028 red → green)
 - Commit after each task or logical group to the feature branch (`feature/004-per-app-info`); the VM never pushes (Constitution III)
 - Stop at any checkpoint to validate the story independently
+---
+
+## Implementation deviations & notes (recorded 2026-10-07, Constitution I)
+
+1. **Package spelling**: the repository's actual package/directory is
+   `com/jkteknologies` (k) — the spec artifacts write `com/jktecnologies` (c).
+   All code was implemented in the repository's real package; the docs' c
+   spelling is cosmetic and was not migrated.
+2. **T007 platform API**: platform-37 exposes
+   `queryStatsForPackage(UUID storageUuid, String packageName, UserHandle)`
+   and `StorageStats.getAppBytes()` — implemented as
+   `queryStatsForPackage(StorageManager.UUID_DEFAULT, pkg, user)` summing
+   `appBytes + dataBytes + cacheBytes` (the plan's "codeBytes" is
+   `appBytes` on the real API).
+3. **T017 consumption site**: the pending filter is applied synchronously in
+   the details slot body (MainActivity) before `DetailsScreen` composes —
+   `LaunchedEffect` would allow one frame of the previously filtered list
+   (a flash); the synchronous write settles within the same frame. H-3's
+   set-override-consume-once semantics unchanged.
+4. **T008 filter property**: `DetailsStateHolder.filter` is a read-only `val`
+   over a private `MutableState` — a `var … private set` synthesizes a JVM
+   `setFilter` that clashes with the contract's explicit `fun setFilter`.
+   Behavior identical.
+5. **T022 row composable**: the existing `ThemeOptionRow` is reused verbatim
+   by both sections (the most literal reading of S-1's "reusing the existing
+   ThemeOptionRow pattern"); it was not renamed or duplicated.
+6. **T027 fallback frequency**: the fallback tier carries a placeholder
+   1 Hz frequency (never displayed — single tiers render the plain count),
+   marked with a `ponytail:` ceiling comment naming the upgrade path.
