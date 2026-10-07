@@ -4,10 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.jkteknologies.androidanalyzer.data.InstalledAppReader
+import com.jkteknologies.androidanalyzer.data.ShizukuAccessStatus
+import com.jkteknologies.androidanalyzer.data.ShizukuAuthorizer
+import com.jkteknologies.androidanalyzer.data.ShizukuChangeSource
 import com.jkteknologies.androidanalyzer.data.UsageAccessStatus
 import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
 import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.FigureUiState
+import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
 import com.jkteknologies.androidanalyzer.ui.home.ResultPoster
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -28,6 +32,9 @@ import java.util.concurrent.Executors
 class DetailsStateHolder(
     private val installedAppReader: InstalledAppReader,
     private val usageAccessStatus: UsageAccessStatus,
+    private val shizukuAccessStatus: ShizukuAccessStatus,
+    private val shizukuAuthorizer: ShizukuAuthorizer,
+    private val shizukuChangeSource: ShizukuChangeSource,
     private val poster: ResultPoster,
     private val executorFactory: () -> ExecutorService = { Executors.newSingleThreadExecutor() },
 ) {
@@ -50,6 +57,16 @@ class DetailsStateHolder(
      * hint shows (FR-008).
      */
     var usageAccessGranted: Boolean? by mutableStateOf(null)
+        private set
+
+    /**
+     * The Shizuku state as of the latest landed pass (005 data-model §8):
+     * `null` until the first pass lands (guidance row hidden), then the
+     * ladder's value — posted in the same epoch-guarded post as [inventory]
+     * and [usageAccessGranted], so the guidance and the figures can never
+     * disagree.
+     */
+    var shizukuAccess: ShizukuAccessState? by mutableStateOf(null)
         private set
 
     /**
@@ -127,6 +144,11 @@ class DetailsStateHolder(
             } catch (t: Throwable) {
                 null // unknown — neither hint nor figures follow from a broken check
             }
+            val shizukuState = try {
+                shizukuAccessStatus.state()
+            } catch (t: Throwable) {
+                null // the ladder never throws; a broken check keeps the last posted state
+            }
             val state = try {
                 installedAppReader.read()?.let { FigureUiState.Available(it) } ?: FigureUiState.Unavailable
             } catch (t: Throwable) {
@@ -136,6 +158,7 @@ class DetailsStateHolder(
                 if (epoch == cycleEpoch) {
                     inventory = state
                     usageAccessGranted = granted
+                    shizukuState?.let { shizukuAccess = it }
                 }
             }
             poster.post {

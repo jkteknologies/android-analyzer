@@ -13,6 +13,8 @@ import android.os.Process
 import android.os.StatFs
 import android.os.storage.StorageManager
 import java.io.File
+import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuAccess
+import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuMemorySource
 import com.jkteknologies.androidanalyzer.domain.AppClassification
 import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.InstalledApp
@@ -22,7 +24,9 @@ import com.jkteknologies.androidanalyzer.domain.CoreCount
 import com.jkteknologies.androidanalyzer.domain.CoreTier
 import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
+import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
 import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.androidanalyzer.domain.memoryBytesFor
 
 /**
  * Platform-backed one-shot readers (contracts/device-readers.md; research.md
@@ -106,6 +110,18 @@ class AndroidDeviceReaders(context: Context) {
     }
 
     /**
+     * 005 (R-03/R-04, contracts/shizuku-memory.md): the Shizuku seams for the
+     * Details wiring — state ladder, authorization forwarder, change source —
+     * plus the privileged memory source the inventory read merges below.
+     */
+    private val shizukuAccess = ShizukuAccess(appContext)
+    private val shizukuMemorySource = ShizukuMemorySource(appContext)
+
+    val shizukuAccessStatus: ShizukuAccessStatus = shizukuAccess.status
+    val shizukuAuthorizer: ShizukuAuthorizer = shizukuAccess.authorizer
+    val shizukuChangeSource: ShizukuChangeSource = shizukuAccess.changeSource
+
+    /**
      * Full inventory read (004 R-01/R-02, contract clauses 1–2): one
      * `getInstalledApplications(0)` enumeration; display names via
      * `loadLabel`, classification through the shared [isSystemApplication]
@@ -120,6 +136,14 @@ class AndroidDeviceReaders(context: Context) {
         val usageGranted = usageAccessStatus.granted()
         val storageStats =
             if (usageGranted) appContext.getSystemService(StorageStatsManager::class.java) else null
+        // 005 (R-06, contract clause 1): one state read per pass; the privileged
+        // memory read happens ONLY when authorized — otherwise no snapshot is
+        // requested and every memoryBytes stays null (FR-006).
+        val memorySnapshot = if (shizukuAccessStatus.state() == ShizukuAccessState.AUTHORIZED) {
+            shizukuMemorySource.read()
+        } else {
+            null
+        }
         val user = Process.myUserHandle()
         val apps: List<InstalledApp?> = appContext.packageManager.getInstalledApplications(0).map { info ->
             val storageBytes = storageStats?.runCatching {
@@ -135,9 +159,10 @@ class AndroidDeviceReaders(context: Context) {
                     AppClassification.USER
                 },
                 storageBytes = storageBytes,
-                // ponytail: current Android has no public per-app memory read (R-03) —
-                // the slot stays null so a future platform API lights it up without a UI change.
-                memoryBytes = null,
+                // 005 R-06: the snapshot's absent key is a truthful zero (installed,
+                // not running); a failed pass or failed figure is null — never a
+                // wrong number (FR-002/FR-006/FR-008).
+                memoryBytes = memoryBytesFor(memorySnapshot, info.packageName),
             )
         }
         // One invalid entry fails the whole read (never-clamp, 004 FR-010) — no partial inventories.
