@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                         memoryReader = readers.memoryReader,
                         storageReader = readers.storageReader,
                         batteryReader = readers.batteryReader,
-                        coreCountReader = readers.coreCountReader,
+                        coreTierReader = readers.coreTierReader,
                         applicationCounter = readers.applicationCounter,
                         poster = HomeStateHolder.mainThreadPoster(),
                     )

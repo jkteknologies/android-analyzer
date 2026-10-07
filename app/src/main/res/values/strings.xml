@@ -18,6 +18,7 @@
     <string name="memory_value">Available %1$s · Allocated %2$s</string>
     <string name="storage_value">Free %1$s · Used %2$s</string>
     <string name="battery_value">%1$d%% · %2$s</string>
+    <string name="processor_tiers_value">%1$d cores: %2$s</string>
 
     <!-- Neutral placeholder and unavailability indication (FR-012/FR-014) -->
     <string name="figure_placeholder">—</string>

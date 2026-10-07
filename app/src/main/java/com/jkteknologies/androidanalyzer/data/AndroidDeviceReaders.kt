@@ -12,12 +12,15 @@ import android.os.Environment
 import android.os.Process
 import android.os.StatFs
 import android.os.storage.StorageManager
+import java.io.File
 import com.jkteknologies.androidanalyzer.domain.AppClassification
 import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.InstalledApp
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTier
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
 
@@ -140,5 +143,32 @@ class AndroidDeviceReaders(context: Context) {
         // One invalid entry fails the whole read (never-clamp, 004 FR-010) — no partial inventories.
         if (apps.any { it == null }) return@InstalledAppReader null
         AppInventory.create(apps.filterNotNull())
+    }
+    /**
+     * Processor core tiers (004 R-04, contract clause 3): groups logical cores
+     * by their sysfs `cpuinfo_max_freq`. Fallback INSIDE the reader — a failed
+     * or partial walk, a frequency-set disagreeing with the core count, or a
+     * single frequency for all cores yields the single-tier
+     * `CoreTiers(Runtime.availableProcessors())`; `null` only if even that
+     * fails (which cannot practically happen — `availableProcessors()` ≥ 1).
+     */
+    val coreTierReader: CoreTierReader = CoreTierReader {
+        val freqs = File("/sys/devices/system/cpu")
+            .listFiles { _, name -> name.startsWith("cpu") && name.drop(3).all { it.isDigit() } }
+            .orEmpty()
+            .mapNotNull { cpu ->
+                File(cpu, "cpufreq/cpuinfo_max_freq").takeIf { it.canRead() }
+                    ?.readText()?.trim()?.toLongOrNull()
+            }
+            .filter { it > 0 }
+        val total = Runtime.getRuntime().availableProcessors()
+        // ponytail: the fallback tier carries a placeholder frequency (1 Hz) — a
+        // single tier renders as the plain count, so the value never displays;
+        // swap for a real cluster API if Android ever exposes one.
+        val fallback = listOf(CoreTier(total, 1L))
+        CoreTiers.create(
+            totalCount = total,
+            tiers = freqs.groupingBy { it }.eachCount().map { (hz, n) -> CoreTier(n, hz) },
+        ) ?: CoreTiers.create(total, fallback)
     }
 }

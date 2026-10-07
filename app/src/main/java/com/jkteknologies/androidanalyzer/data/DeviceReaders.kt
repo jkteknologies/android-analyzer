@@ -4,6 +4,7 @@ import com.jkteknologies.androidanalyzer.domain.AppInventory
 import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
 import com.jkteknologies.androidanalyzer.domain.BatteryReading
 import com.jkteknologies.androidanalyzer.domain.CoreCount
+import com.jkteknologies.androidanalyzer.domain.CoreTiers
 import com.jkteknologies.androidanalyzer.domain.MemoryReading
 import com.jkteknologies.androidanalyzer.domain.StorageReading
 import com.jkteknologies.androidanalyzer.domain.RefreshMode
@@ -48,6 +49,14 @@ fun interface BatteryReader {
 /** `Runtime.availableProcessors()` → [CoreCount] (never `null` in practice). */
 fun interface CoreCountReader {
     fun read(): CoreCount?
+}
+
+/**
+ * One sysfs cpufreq grouping (with total-count fallback) → the 004
+ * [CoreTiers], or `null` (R-04).
+ */
+fun interface CoreTierReader {
+    fun read(): CoreTiers?
 }
 
 /** Full package enumeration → [ApplicationInventory], or `null` (R-01). */
