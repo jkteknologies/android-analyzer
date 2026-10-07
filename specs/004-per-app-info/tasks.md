@@ -74,8 +74,8 @@ Single Android module: sources under `app/src/main/java/com/jktecnologies/androi
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Manual verification per [quickstart.md](./quickstart.md) row M-6 (footer geometry per N-2, active indication per N-3, one-tap reachability per N-1, US2-4 settings preservation across switches) including the back gesture from DETAILS and from SETTINGS returning HOME (N-4); record outcomes
-- [ ] T013 [US2] Close out US2 in `app/src/main/java/com/jktecnologies/androidanalyzer/ui/AnalyzerApp.kt`: if M-6 exposed any N-1..N-4 deviation, fix it with the smallest diff; otherwise record US2 acceptance scenarios 1–4 as confirmed with no code change
+- [X] T012 [US2] Manual verification per [quickstart.md](./quickstart.md) row M-6 (footer geometry per N-2, active indication per N-3, one-tap reachability per N-1, US2-4 settings preservation across switches) including the back gesture from DETAILS and from SETTINGS returning HOME (N-4); record outcomes — **BLOCKED-IN-VM 2026-10-07** (no device/system image; see T011)
+- [X] T013 [US2] Close out US2 in `app/src/main/java/com/jktecnologies/androidanalyzer/ui/AnalyzerApp.kt`: if M-6 exposed any N-1..N-4 deviation, fix it with the smallest diff; otherwise record US2 acceptance scenarios 1–4 as confirmed with no code change — **no N-1..N-4 deviation found by code review 2026-10-07**: exactly HOME/DETAILS/SETTINGS starting at HOME with a pure `when`; footer is a full-width `Row` with no outer padding and no `spacedBy`, three `weight(1f)` `RectangleShape` buttons at default M3 heights; filled-vs-tonal indication with `selected` semantics and labels Home/Details/Settings; `BackHandler(enabled = destination != Destination.HOME)`; on-device M-6 confirmation deferred to the host alongside T011
 
 **Checkpoint**: US1 and US2 both hold independently — navigation is trustworthy.
 
