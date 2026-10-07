@@ -88,6 +88,7 @@ class DetailsStateHolderTest {
         shizukuAccessStatus = ShizukuAccessStatus { shizukuStateResult },
         shizukuAuthorizer = ShizukuAuthorizer { authorizerCalls++ },
         shizukuChangeSource = ShizukuChangeSource { onChange ->
+            changeEvents.clear() // a new subscription replaces the removed one, like the real listener set
             changeEvents += onChange
             { changeUnsubscribed = true }
         },
@@ -355,11 +356,14 @@ class DetailsStateHolderTest {
 
     @Test
     fun `the initial sticky delivery triggers no refresh`() { // V-S5
-        changeEvents.forEach { it() } // what listen registered at construction
+        holder.startReadCycle() // subscribes + queues the first pass
+        val passesAfterStart = executor.passes.size
+
+        changeEvents.forEach { it() } // the sticky delivery of the fresh subscription
         poster.applyAll()
 
-        assertEquals(0, executor.passes.size)
-        assertEquals(0, readerCalls)
+        assertEquals(passesAfterStart, executor.passes.size) // no second pass
+        assertEquals(0, readerCalls) // nothing has run yet — no double pass at startup
     }
 
     @Test
@@ -391,8 +395,31 @@ class DetailsStateHolderTest {
 
     @Test
     fun `shutdown unsubscribes the change source`() { // V-S4's dispose half
+        holder.startReadCycle() // subscribes first — the T019 lazy lifecycle
         holder.shutdown()
 
         assertTrue(changeUnsubscribed)
+    }
+
+    @Test
+    fun `change events trigger a refresh again after shutdown and a later revival`() { // T019
+        shizukuStateResult = ShizukuAccessState.AWAITING_AUTHORIZATION
+        holder.startReadCycle()
+        executor.runLastPass()
+        poster.applyAll()
+        assertEquals(ShizukuAccessState.AWAITING_AUTHORIZATION, holder.shizukuAccess)
+        holder.shutdown() // Details disposed: subscription removed, executor stopped
+        assertTrue(changeUnsubscribed)
+
+        shizukuStateResult = ShizukuAccessState.AUTHORIZED
+        holder.refresh() // a later Details visit: fresh executor, fresh subscription
+        changeEvents.forEach { it() } // a grant event on the revived subscription
+        poster.applyAll()
+
+        executor.runLastPass()
+        poster.applyAll()
+
+        // The auto re-read landed by itself — no restart, no manual gesture (FR-007).
+        assertEquals(ShizukuAccessState.AUTHORIZED, holder.shizukuAccess)
     }
 }

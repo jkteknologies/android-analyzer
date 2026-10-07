@@ -18,16 +18,16 @@ class ShizukuAccess(private val appContext: Context) {
 
     /**
      * The R-03 ladder — total and terminating, never throws (contract
-     * clause 3): every library throw collapses to NOT_RUNNING. May perform
-     * binder work; belongs on the background executor like the readers.
+     * clause 3): every post-ping library throw collapses to NOT_RUNNING
+     * (T020 — a dead binder is never "outdated" or "awaiting"), and a failed
+     * installed-check is not installed. May perform binder work; belongs on
+     * the background executor like the readers.
      */
     val status: ShizukuAccessStatus = ShizukuAccessStatus {
         when {
             !isInstalled() -> ShizukuAccessState.NOT_INSTALLED
             !pingBinder() -> ShizukuAccessState.NOT_RUNNING
-            isOutdated() -> ShizukuAccessState.OUTDATED
-            !isGranted() -> ShizukuAccessState.AWAITING_AUTHORIZATION
-            else -> ShizukuAccessState.AUTHORIZED
+            else -> postPingState()
         }
     }
 
@@ -75,17 +75,21 @@ class ShizukuAccess(private val appContext: Context) {
         false
     }
 
-    /** The v13 floor (R-03): the UserService route needs the v13 protocol. */
-    private fun isOutdated(): Boolean = try {
-        Shizuku.isPreV11() || Shizuku.getVersion() < 13
+    /**
+     * The post-ping steps (T020, contract clause 3): the version floor (the
+     * v13 protocol the UserService route needs, R-03) then the permission
+     * check — one try, so a binder that died between `pingBinder` and either
+     * call maps to NOT_RUNNING instead of wrong guidance.
+     */
+    private fun postPingState(): ShizukuAccessState = try {
+        when {
+            Shizuku.isPreV11() || Shizuku.getVersion() < 13 -> ShizukuAccessState.OUTDATED
+            Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED ->
+                ShizukuAccessState.AWAITING_AUTHORIZATION
+            else -> ShizukuAccessState.AUTHORIZED
+        }
     } catch (_: Throwable) {
-        true
-    }
-
-    private fun isGranted(): Boolean = try {
-        Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-    } catch (_: Throwable) {
-        false
+        ShizukuAccessState.NOT_RUNNING
     }
 
     companion object {

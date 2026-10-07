@@ -41,13 +41,24 @@ class DetailsStateHolder(
     private var executor: ExecutorService = executorFactory()
 
     /**
-     * The Shizuku change subscription (005 data-model §8, contract clause 7):
-     * registered at construction (library callbacks already arrive on the
-     * main thread; the poster keeps every state write main-thread-confined)
-     * and removed in [shutdown].
+     * The Shizuku change subscription (005 data-model §8, contract clause 7,
+     * T019): owned exactly like the executor — subscribed lazily by the first
+     * [startCycle] (nothing registered while the screen is unused), removed
+     * in [shutdown] (Details dispose — every tab-away), and re-subscribed by
+     * the next cycle after a shutdown. The auto re-read on grant therefore
+     * survives tab switches (FR-007, SC-003), and a holder whose screen is
+     * gone never keeps listening (Constitution IX). Library callbacks already
+     * arrive on the main thread; the poster keeps every state write
+     * main-thread-confined.
      */
-    private val unsubscribeChanges: () -> Unit = shizukuChangeSource.listen {
-        poster.post(::onShizukuChanged)
+    private var unsubscribeChanges: (() -> Unit)? = null
+
+    private fun ensureChangeSubscription() {
+        if (unsubscribeChanges == null) {
+            unsubscribeChanges = shizukuChangeSource.listen {
+                poster.post(::onShizukuChanged)
+            }
+        }
     }
 
     /** Identity of the current read pass; posts carrying a stale one are dropped (003 C-5). */
@@ -176,6 +187,7 @@ class DetailsStateHolder(
         if (executor.isShutdown) {
             executor = executorFactory()
         }
+        ensureChangeSubscription()
         executor.execute {
             val granted = try {
                 usageAccessStatus.granted()
@@ -210,7 +222,8 @@ class DetailsStateHolder(
 
     /** Releases the single executor thread and the change subscription (host screen discarded). */
     fun shutdown() {
-        unsubscribeChanges()
+        unsubscribeChanges?.invoke()
+        unsubscribeChanges = null
         executor.shutdown()
     }
 }
