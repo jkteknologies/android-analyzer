@@ -169,3 +169,12 @@ Task: "T009 ShizukuAccess seam implementations in app/src/main/java/com/jkteknol
 - Commit after each task or logical group
 - Stop at any checkpoint to validate the story independently
 - The Shizuku-library surface (provider handshake, dialog, binder death) is manual-matrix territory — never mock it in JVM tests, fake the seams instead (R-10)
+
+---
+
+## Phase 7: Convergence
+
+**Purpose**: Gap-closure from the 2026-10-07 convergence pass — two findings against the implemented state (everything else verified converged: 12 FRs, 6 SCs, all acceptance scenarios and edge cases, plan decisions R-01..R-11, constitution I–IX; automated gates green with 110 tests).
+
+- [ ] T019 Make the Shizuku change subscription revivable like the executor in `app/src/main/java/com/jkteknologies/androidanalyzer/ui/details/DetailsStateHolder.kt`: today it is created once at construction and removed by `shutdown()` (DetailsScreen dispose — every tab-away), so after one Details→Home→Details cycle the auto re-read on grant is permanently dead (FR-007 clause 2, SC-003), and a rotation on a non-Details tab leaves the old holder's construction-time subscription alive as an event-driven zombie (Constitution IX). Fix: subscribe lazily via an ensure-subscribed guard called from `startCycle` (no subscription until the screen is actually used), unsubscribe in `shutdown()`, re-subscribe on the next cycle — mirroring the executor's shutdown/factory-revival stewardship. Adjust `DetailsStateHolderTest` V-S5 (fire the sticky after `startReadCycle` queues, before any post lands) and add a revival case: `shutdown()` → new cycle → a change event triggers a refresh again (partial)
+- [ ] T020 Collapse post-ping library throws to NOT_RUNNING in `app/src/main/java/com/jkteknologies/androidanalyzer/data/shizuku/ShizukuAccess.kt` per contracts/shizuku-memory.md clause 3 ("every library throw … collapses to NOT_RUNNING"): in the binder-death race window `isOutdated()`'s catch currently maps to OUTDATED ("update Shizuku") and `isGranted()`'s to AWAITING_AUTHORIZATION — both wrong guidance for a dead binder. Wrap the version-floor and permission steps so any `Throwable` after a successful `pingBinder()` yields NOT_RUNNING (one `runCatching` around the two steps, or collapse both catches accordingly) (contradicts, LOW)
