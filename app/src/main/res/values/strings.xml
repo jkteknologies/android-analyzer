@@ -83,4 +83,21 @@
     <!-- Link opening (006 FR-016, contracts L-3): graceful failure when no
          browser/handler exists — one auto-dismissing snackbar, no dialog. -->
     <string name="link_unavailable">Couldn\'t find an app to open this link.</string>
+
+    <!-- Help screen (006 FR-006..FR-012, contracts N-1): five titled sections
+         in spec order — About, Limitations, Per-app memory, Contacts, License.
+         English only (spec Assumption). -->
+    <string name="help_title_about">About</string>
+    <string name="help_title_limitations">Limitations</string>
+    <string name="help_title_per_app_memory">Per-app memory</string>
+    <string name="help_title_contacts">Contacts</string>
+    <string name="help_title_license">License</string>
+    <string name="help_about">Resource Radar shows an overview of your device\'s resources — memory, internal storage, battery, and processor — plus details for every installed application. Per-app memory figures are provided through the Shizuku app.</string>
+    <string name="help_limitations">Per-app memory needs the Shizuku app, and storage figures need the usage-access grant. All figures are estimates reported by the operating system — useful for orientation, not forensics.</string>
+    <string name="help_per_app_memory">Install and start the free Shizuku app (shizuku.rikka.app), allow Resource Radar access in it, then open an application\'s details to see its memory usage.</string>
+    <string name="contact_linkedin">Jurijs Kolomijecs on LinkedIn</string>
+    <string name="contact_website">jkteknologies.com</string>
+
+    <!-- Footer navigation, fourth destination (006 FR-006, N-1) -->
+    <string name="footer_help">Help</string>
 </resources>

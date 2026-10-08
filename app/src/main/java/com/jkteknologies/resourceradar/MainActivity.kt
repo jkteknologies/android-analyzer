@@ -13,6 +13,7 @@ import com.jkteknologies.resourceradar.data.SharedPreferencesRefreshModeStore
 import com.jkteknologies.resourceradar.ui.AnalyzerApp
 import com.jkteknologies.resourceradar.ui.details.DetailsScreen
 import com.jkteknologies.resourceradar.ui.details.DetailsStateHolder
+import com.jkteknologies.resourceradar.ui.help.HelpScreen
 import com.jkteknologies.resourceradar.ui.home.HomeScreen
 import com.jkteknologies.resourceradar.ui.home.HomeStateHolder
 import com.jkteknologies.resourceradar.ui.settings.SettingsScreen
@@ -91,6 +92,9 @@ class MainActivity : ComponentActivity() {
                                 refreshMode = selection
                             },
                         )
+                    },
+                    help = { onLinkUnavailable ->
+                        HelpScreen(onLinkUnavailable)
                     },
                 )
             }

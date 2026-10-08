@@ -35,25 +35,29 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * The three destinations of the hand-rolled shell (004 data-model §8, R-05):
- * no Navigation dependency — a plain `mutableStateOf` drives the switch and
- * the footer indication, so the two can never diverge.
+ * The four destinations of the hand-rolled shell (004 data-model §8, R-05;
+ * 006 adds HELP — R-09): no Navigation dependency — a plain `mutableStateOf`
+ * drives the switch and the footer indication, so the two can never diverge.
+ * Enum order is footer order and, since 006 US5, swipe order — HELP stays
+ * last.
  */
 enum class Destination {
     HOME,
     DETAILS,
     SETTINGS,
+    HELP,
 }
 
 /**
  * App shell (002 U-1..U-6 plus 004 contracts/navigation-and-footer.md
- * N-1..N-4): a persistent footer on every screen with three equal-width
- * square-cornered gapless buttons — Home, Details, Settings (FR-002) — the
- * current destination indicated filled vs tonal (FR-003), and the system back
- * gesture on DETAILS and SETTINGS returning HOME (N-4); back from HOME exits
- * as today. Entering HOME re-triggers the home read cycle: the home screen
- * leaves composition on other tabs and its entering-composition trigger
- * fires again on return (002 in-app return).
+ * N-1..N-4; 006 contracts/navigation-and-links.md N-1..N-7): a persistent
+ * footer on every screen with four equal-width square-cornered gapless
+ * buttons — Home, Details, Settings, Help (006 N-1) — the current
+ * destination indicated filled vs tonal, and the system back gesture on any
+ * non-HOME destination returning HOME; back from HOME exits as today.
+ * Entering HOME re-triggers the home read cycle: the home screen leaves
+ * composition on other tabs and its entering-composition trigger fires again
+ * on return (002 in-app return).
  */
 @Composable
 fun AnalyzerApp(
@@ -63,6 +67,7 @@ fun AnalyzerApp(
     home: @Composable (onOpenApplications: (AppCategoryFilter) -> Unit) -> Unit,
     details: @Composable (pendingFilter: AppCategoryFilter?, onPendingFilterConsumed: () -> Unit) -> Unit,
     settings: @Composable () -> Unit,
+    help: @Composable (onLinkUnavailable: () -> Unit) -> Unit,
 ) {
     var destination by remember { mutableStateOf(Destination.HOME) }
 
@@ -86,7 +91,7 @@ fun AnalyzerApp(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val linkUnavailableMessage = stringResource(R.string.link_unavailable)
-    val onLinkUnavailable = {
+    val onLinkUnavailable: () -> Unit = {
         scope.launch { snackbarHostState.showSnackbar(linkUnavailableMessage) }
     }
 
@@ -108,7 +113,8 @@ fun AnalyzerApp(
                 when (destination) {
                     Destination.HOME -> refreshHome()
                     Destination.DETAILS -> refreshDetails()
-                    Destination.SETTINGS -> Unit
+                    // SETTINGS and HELP have no refreshable data (006 N-7).
+                    Destination.SETTINGS, Destination.HELP -> Unit
                 }
             }
         }
@@ -134,16 +140,17 @@ fun AnalyzerApp(
                 }
                 Destination.DETAILS -> details(pendingDetailsFilter) { pendingDetailsFilter = null }
                 Destination.SETTINGS -> settings()
+                Destination.HELP -> help(onLinkUnavailable)
             }
         }
     }
 }
 
 /**
- * The persistent three-button footer (N-2, FR-002): one continuous full-width
- * bar — no outer padding, no spacing between buttons, three equal-width
- * (`weight(1f)`) square-cornered buttons. Default Material3 button heights;
- * no fixed heights (002 A-2 rule preserved).
+ * The persistent four-button footer (004 N-2; 006 N-1 adds Help): one
+ * continuous full-width bar — no outer padding, no spacing between buttons,
+ * four equal-width (`weight(1f)`) square-cornered buttons. Default Material3
+ * button heights; no fixed heights (002 A-2 rule preserved).
  */
 @Composable
 private fun FooterBar(
@@ -165,6 +172,11 @@ private fun FooterBar(
             label = stringResource(R.string.footer_settings),
             selected = destination == Destination.SETTINGS,
             onClick = { onNavigate(Destination.SETTINGS) },
+        )
+        FooterButton(
+            label = stringResource(R.string.footer_help),
+            selected = destination == Destination.HELP,
+            onClick = { onNavigate(Destination.HELP) },
         )
     }
 }
