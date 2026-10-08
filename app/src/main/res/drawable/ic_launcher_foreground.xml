@@ -1,18 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adaptive-icon foreground: an analysis "lens" motif kept inside the 66dp safe zone. -->
+<!--
+  Adaptive-icon foreground (006 FR-004, R-06): the b-blip-bars artwork —
+  radar ring, sweep wedge, four bars, baseline, blip — from
+  design/logos/b-blip-bars.svg (512×512), scaled by 0.185 and centered
+  (group translate 6.64) so every element stays inside the 66dp center safe
+  zone (farthest content point: 32.7dp from center ≤ 33dp). The SVG's
+  background rect and decorative edge stroke are dropped: the background
+  layer carries the canvas, the launcher mask supplies the shape. The red
+  sweep gradient stays in this color layer (VectorDrawable gradients are
+  fine at minSdk 35); the flat monochrome twin is ic_launcher_monochrome.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Lens ring -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.92"
-        android:pathData="M54,36a15,15 0 1,0 0.001,0z M54,42a9,9 0 1,1 -0.001,0z"
-        android:fillType="evenOdd" />
-    <!-- Handle -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M65.6,65.6a3.5,3.5 0 0,0 5,-4.9l-0.1,-0.1 -8.9,-8.9 -5,5 9,8.9z" />
+    <group
+        android:translateX="6.64"
+        android:translateY="6.64"
+        android:scaleX="0.185"
+        android:scaleY="0.185">
+        <!-- Radar sweep wedge (gradient #E53935 60% → 4% across the quadrant) -->
+        <path android:pathData="M256,256 L256,86 A170,170 0 0 1 415.7,197.9 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="256"
+                    android:startY="86"
+                    android:endX="416"
+                    android:endY="198"
+                    android:type="linear">
+                    <item
+                        android:color="#99E53935"
+                        android:offset="0" />
+                    <item
+                        android:color="#0AE53935"
+                        android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <!-- Radar ring -->
+        <path
+            android:strokeColor="#99E53935"
+            android:strokeWidth="10"
+            android:pathData="M86,256 a170,170 0 1 0 340,0 a170,170 0 1 0 -340,0" />
+        <!-- Bars, ascending opacity 35% / 55% / 75% / 100% -->
+        <path
+            android:fillColor="#59E53935"
+            android:pathData="M171,270 L185,270 A10,10 0 0 1 195,280 L195,334 A10,10 0 0 1 185,344 L171,344 A10,10 0 0 1 161,334 L161,280 A10,10 0 0 1 171,270 Z" />
+        <path
+            android:fillColor="#8CE53935"
+            android:pathData="M223,230 L237,230 A10,10 0 0 1 247,240 L247,334 A10,10 0 0 1 237,344 L223,344 A10,10 0 0 1 213,334 L213,240 A10,10 0 0 1 223,230 Z" />
+        <path
+            android:fillColor="#BFE53935"
+            android:pathData="M275,186 L289,186 A10,10 0 0 1 299,196 L299,334 A10,10 0 0 1 289,344 L275,344 A10,10 0 0 1 265,334 L265,196 A10,10 0 0 1 275,186 Z" />
+        <path
+            android:fillColor="#FF5252"
+            android:pathData="M327,136 L341,136 A10,10 0 0 1 351,146 L351,334 A10,10 0 0 1 341,344 L327,344 A10,10 0 0 1 317,334 L317,146 A10,10 0 0 1 327,136 Z" />
+        <!-- Baseline -->
+        <path
+            android:strokeColor="#80E53935"
+            android:strokeWidth="6"
+            android:strokeLineCap="round"
+            android:pathData="M146,348 L366,348" />
+        <!-- Blip: outer ring + dot at the sweep edge -->
+        <path
+            android:strokeColor="#59FF5252"
+            android:strokeWidth="5"
+            android:pathData="M307.8,101.9 a20,20 0 1 0 40,0 a20,20 0 1 0 -40,0" />
+        <path
+            android:fillColor="#FF5252"
+            android:pathData="M317.8,101.9 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0" />
+    </group>
 </vector>

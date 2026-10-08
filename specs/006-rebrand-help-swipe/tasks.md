@@ -53,11 +53,11 @@ Single Gradle module: `app/src/main/java|aidl|res/`, `app/src/test/java/`, docs 
 
 ### Implementation for User Story 1
 
-- [ ] T003 [US1] In `app/build.gradle.kts`, rename `namespace` and `applicationId` from `com.jkteknologies.androidanalyzer` to `com.jkteknologies.resourceradar` (R-08; the `${applicationId}`-parameterized manifest entries — Shizuku provider authority, DYNAMIC_RECEIVER removal — need no edits).
-- [ ] T004 [US1] Move the whole source trees one mechanical step (R-08): `app/src/main/java/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`, `app/src/main/aidl/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`, `app/src/test/java/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`; rewrite every `package`/`import` line in all moved `.kt` files and both `.aidl` files' (`AppProcessMemory.aidl`, `IAppMemoryService.aidl`) package declarations. `git mv` the directories so history follows.
-- [ ] T005 [P] [US1] Rebrand user-visible strings in `app/src/main/res/values/strings.xml`: `app_name` → "Resource Radar", and the two hints embedding the old name — `shizuku_hint_not_installed` ("…then allow Resource Radar there.") and `shizuku_hint_awaiting` ("Allow Resource Radar in Shizuku…"). Also rename the style id `Theme.AndroidAnalyzer` → `Theme.ResourceRadar` in `app/src/main/res/values/themes.xml` and its `@style/` reference in `app/src/main/AndroidManifest.xml` (internal id hygiene, R-08).
-- [ ] T006 [P] [US1] Update `README.md`: line 1 heading and the line-98 manual-checklist row read "Resource Radar" (spec Assumption: docs are part of the rebrand).
-- [ ] T007 [US1] Verify US1: `grep -rin "androidanalyzer" app/ *.kts` returns zero hits; `grep -rn "Android Analyzer" app/src README.md` returns zero hits; rerun T001's gates — all 111 tests pass on the renamed packages, lint zero errors (R-08: the rename must not cost a single test).
+- [X] T003 [US1] In `app/build.gradle.kts`, rename `namespace` and `applicationId` from `com.jkteknologies.androidanalyzer` to `com.jkteknologies.resourceradar` (R-08; the `${applicationId}`-parameterized manifest entries — Shizuku provider authority, DYNAMIC_RECEIVER removal — need no edits).
+- [X] T004 [US1] Move the whole source trees one mechanical step (R-08): `app/src/main/java/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`, `app/src/main/aidl/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`, `app/src/test/java/com/jkteknologies/androidanalyzer/` → `…/resourceradar/`; rewrite every `package`/`import` line in all moved `.kt` files and both `.aidl` files' (`AppProcessMemory.aidl`, `IAppMemoryService.aidl`) package declarations. `git mv` the directories so history follows.
+- [X] T005 [P] [US1] Rebrand user-visible strings in `app/src/main/res/values/strings.xml`: `app_name` → "Resource Radar", and the two hints embedding the old name — `shizuku_hint_not_installed` ("…then allow Resource Radar there.") and `shizuku_hint_awaiting` ("Allow Resource Radar in Shizuku…"). Also rename the style id `Theme.AndroidAnalyzer` → `Theme.ResourceRadar` in `app/src/main/res/values/themes.xml` and its `@style/` reference in `app/src/main/AndroidManifest.xml` (internal id hygiene, R-08).
+- [X] T006 [P] [US1] Update `README.md`: line 1 heading and the line-98 manual-checklist row read "Resource Radar" (spec Assumption: docs are part of the rebrand).
+- [X] T007 [US1] Verify US1: `grep -rin "androidanalyzer" app/ *.kts` returns zero hits; `grep -rn "Android Analyzer" app/src README.md` returns zero hits; rerun T001's gates — all 111 tests pass on the renamed packages, lint zero errors (R-08: the rename must not cost a single test).
 
 **Checkpoint**: Fully rebranded, correctly identified app — US1's acceptance scenarios 1–3 verifiable on device (host M-3), scenario 4 by T007's greps.
 
@@ -71,10 +71,10 @@ Single Gradle module: `app/src/main/java|aidl|res/`, `app/src/test/java/`, docs 
 
 ### Implementation for User Story 2
 
-- [ ] T008 [P] [US2] Replace `app/src/main/res/drawable/ic_launcher_background.xml` with a full-bleed vector rectangle filled `#0D0D0F` in the 108 dp adaptive viewport (the SVG's rounded corners are dropped — launcher masks supply the shape, R-06).
-- [ ] T009 [P] [US2] Replace `app/src/main/res/drawable/ic_launcher_foreground.xml` with the ring + bars paths from `design/logos/b-blip-bars.svg` scaled into the 108 dp viewport with all content inside the 66 dp center safe zone; keep the red sweep gradient in this layer.
-- [ ] T010 [US2] Create `app/src/main/res/drawable/ic_launcher_monochrome.xml` — flat white single-color variant of the same bars+ring artwork — and point the existing `<monochrome>` element in `app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` at it (themed icons tint a dedicated flat layer correctly; a gradient layer would render as a blob, R-06).
-- [ ] T011 [US2] Verify US2: `./gradlew lintDebug assembleDebug` green (lint validates the vector drawables); leave M-1 (icon at launcher sizes/mask) and M-2 (themed icon tint) for the host checklist — not runnable in the VM.
+- [X] T008 [P] [US2] Replace `app/src/main/res/drawable/ic_launcher_background.xml` with a full-bleed vector rectangle filled `#0D0D0F` in the 108 dp adaptive viewport (the SVG's rounded corners are dropped — launcher masks supply the shape, R-06).
+- [X] T009 [P] [US2] Replace `app/src/main/res/drawable/ic_launcher_foreground.xml` with the ring + bars paths from `design/logos/b-blip-bars.svg` scaled into the 108 dp viewport with all content inside the 66 dp center safe zone; keep the red sweep gradient in this layer.
+- [X] T010 [US2] Create `app/src/main/res/drawable/ic_launcher_monochrome.xml` — flat white single-color variant of the same bars+ring artwork — and point the existing `<monochrome>` element in `app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` at it (themed icons tint a dedicated flat layer correctly; a gradient layer would render as a blob, R-06).
+- [X] T011 [US2] Verify US2: `./gradlew lintDebug assembleDebug` green (lint validates the vector drawables); leave M-1 (icon at launcher sizes/mask) and M-2 (themed icon tint) for the host checklist — not runnable in the VM.
 
 **Checkpoint**: Branded icon ships in the build; US2 independently testable on device.
 
