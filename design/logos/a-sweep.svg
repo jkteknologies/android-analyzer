@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Concept A "Sweep": classic radar scope -->
+  <defs>
+    <linearGradient id="sweep" gradientUnits="userSpaceOnUse" x1="256" y1="86" x2="416" y2="198">
+      <stop offset="0" stop-color="#E53935" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#E53935" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0D0D0F"/>
+  <rect x="10" y="10" width="492" height="492" rx="104" fill="none" stroke="#E53935" stroke-opacity="0.25" stroke-width="3"/>
+  <g stroke="#E53935" stroke-opacity="0.18" stroke-width="6">
+    <line x1="256" y1="86" x2="256" y2="426"/>
+    <line x1="86" y1="256" x2="426" y2="256"/>
+  </g>
+  <g fill="none" stroke="#E53935" stroke-width="10">
+    <circle cx="256" cy="256" r="170" stroke-opacity="0.85"/>
+    <circle cx="256" cy="256" r="118" stroke-opacity="0.5"/>
+    <circle cx="256" cy="256" r="64" stroke-opacity="0.5"/>
+  </g>
+  <path d="M256,256 L256,86 A170,170 0 0 1 415.7,197.9 Z" fill="url(#sweep)"/>
+  <circle cx="188" cy="190" r="24" fill="none" stroke="#FF5252" stroke-opacity="0.35" stroke-width="5"/>
+  <circle cx="188" cy="190" r="13" fill="#FF5252"/>
+  <circle cx="256" cy="256" r="11" fill="#E53935"/>
+</svg>
