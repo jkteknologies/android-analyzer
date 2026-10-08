@@ -129,7 +129,7 @@ Single Gradle module: `app/src/main/java|aidl|res/`, `app/src/test/java/`, docs 
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T020 Run the complete automated section of `specs/006-rebrand-help-swipe/quickstart.md`: both Gradle gates, all four identity/verbatim checks (grep `androidanalyzer` → zero, grep "Android Analyzer" → zero, `cmp LICENSE app/src/main/res/raw/license.txt` silent, `grep -c "Resource Radar" strings.xml` ≥ 1).
+- [X] T020 Run the complete automated section of `specs/006-rebrand-help-swipe/quickstart.md`: both Gradle gates, all four identity/verbatim checks (grep `androidanalyzer` → zero, grep "Android Analyzer" → zero, `cmp LICENSE app/src/main/res/raw/license.txt` silent, `grep -c "Resource Radar" strings.xml` ≥ 1).
 - [ ] T021 Hand the host the manual checklist (quickstart.md M-1..M-11) covering the spec's acceptance scenarios — M-9 (no-browser snackbar) optional. Host records results; after M-1..M-8 pass, the host merges `feature/006-ui-improvements` to `master` (push happens from the host only, Constitution III).
 
 ---
