@@ -1,6 +1,6 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
-import com.jkteknologies.androidanalyzer.data.ThemePreferenceStore
+import com.jkteknologies.resourceradar.data.ThemePreferenceStore
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

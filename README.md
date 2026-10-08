@@ -1,4 +1,4 @@
-# Android Analyzer
+# Resource Radar
 
 Android app that analyzes resource consumption and suggests improvements.
 Current status: **home-screen analyzer** (feature `002-home-screen`) — a single
@@ -95,7 +95,7 @@ font-scale and TalkBack checks) lives in
 | Full local verify | `./scripts/verify.sh` | `PASS: build, testDebugUnitTest, lint`, exit 0 | ≤ 10 min (SC-002) | 26 s incremental / 1 m 22 s from clean |
 | Offline build | `./gradlew build --offline` | `BUILD SUCCESSFUL` | valid after first warm run (SC-006) | 39 s clean, fully offline |
 | CI | push / PR | green run, all three checks pass | ≤ 15 min cold cache (SC-003) | see the Actions badge above |
-| App launch (optional, manual) | install on API 35+ | "Android Analyzer" placeholder ≤ 5 s | SC-005 | not measured (no emulator on dev VM) |
+| App launch (optional, manual) | install on API 35+ | "Resource Radar" placeholder ≤ 5 s | SC-005 | not measured (no emulator on dev VM) |
 | Permission surface | `aapt2 dump permissions app-debug.apk` | exactly `android.permission.QUERY_ALL_PACKAGES` | one justified permission (002 FR-013) | 1 `uses-permission` entry |
 
 ## License

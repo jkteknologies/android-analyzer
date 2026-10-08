@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.data
+package com.jkteknologies.resourceradar.data
 
 import android.app.ActivityManager
 import android.app.AppOpsManager
@@ -13,20 +13,20 @@ import android.os.Process
 import android.os.StatFs
 import android.os.storage.StorageManager
 import java.io.File
-import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuAccess
-import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuMemorySource
-import com.jkteknologies.androidanalyzer.domain.AppClassification
-import com.jkteknologies.androidanalyzer.domain.AppInventory
-import com.jkteknologies.androidanalyzer.domain.InstalledApp
-import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
-import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
-import com.jkteknologies.androidanalyzer.domain.CoreTier
-import com.jkteknologies.androidanalyzer.domain.CoreTiers
-import com.jkteknologies.androidanalyzer.domain.MemoryReading
-import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
-import com.jkteknologies.androidanalyzer.domain.StorageReading
-import com.jkteknologies.androidanalyzer.domain.memoryBytesFor
+import com.jkteknologies.resourceradar.data.shizuku.ShizukuAccess
+import com.jkteknologies.resourceradar.data.shizuku.ShizukuMemorySource
+import com.jkteknologies.resourceradar.domain.AppClassification
+import com.jkteknologies.resourceradar.domain.AppInventory
+import com.jkteknologies.resourceradar.domain.InstalledApp
+import com.jkteknologies.resourceradar.domain.ApplicationInventory
+import com.jkteknologies.resourceradar.domain.BatteryReading
+import com.jkteknologies.resourceradar.domain.CoreCount
+import com.jkteknologies.resourceradar.domain.CoreTier
+import com.jkteknologies.resourceradar.domain.CoreTiers
+import com.jkteknologies.resourceradar.domain.MemoryReading
+import com.jkteknologies.resourceradar.domain.ShizukuAccessState
+import com.jkteknologies.resourceradar.domain.StorageReading
+import com.jkteknologies.resourceradar.domain.memoryBytesFor
 
 /**
  * Platform-backed one-shot readers (contracts/device-readers.md; research.md

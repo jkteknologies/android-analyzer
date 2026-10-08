@@ -1,8 +1,8 @@
-package com.jkteknologies.androidanalyzer.data
+package com.jkteknologies.resourceradar.data
 
 import android.content.Context
-import com.jkteknologies.androidanalyzer.domain.ThemePreference
-import com.jkteknologies.androidanalyzer.domain.fromPersisted
+import com.jkteknologies.resourceradar.domain.ThemePreference
+import com.jkteknologies.resourceradar.domain.fromPersisted
 
 /**
  * [ThemePreferenceStore] over `SharedPreferences` (task T019; research.md

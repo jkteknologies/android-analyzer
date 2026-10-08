@@ -1,8 +1,8 @@
-package com.jkteknologies.androidanalyzer.data.shizuku
+package com.jkteknologies.resourceradar.data.shizuku
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.jkteknologies.androidanalyzer.domain.ProcessMemory
+import com.jkteknologies.resourceradar.domain.ProcessMemory
 
 /**
  * The AIDL parcelable (005 data-model §6): one process's reading marshalled

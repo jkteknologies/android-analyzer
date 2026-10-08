@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer
+package com.jkteknologies.resourceradar
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,16 +7,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.jkteknologies.androidanalyzer.data.AndroidDeviceReaders
-import com.jkteknologies.androidanalyzer.data.SharedPreferencesThemeStore
-import com.jkteknologies.androidanalyzer.data.SharedPreferencesRefreshModeStore
-import com.jkteknologies.androidanalyzer.ui.AnalyzerApp
-import com.jkteknologies.androidanalyzer.ui.details.DetailsScreen
-import com.jkteknologies.androidanalyzer.ui.details.DetailsStateHolder
-import com.jkteknologies.androidanalyzer.ui.home.HomeScreen
-import com.jkteknologies.androidanalyzer.ui.home.HomeStateHolder
-import com.jkteknologies.androidanalyzer.ui.settings.SettingsScreen
-import com.jkteknologies.androidanalyzer.ui.theme.AppTheme
+import com.jkteknologies.resourceradar.data.AndroidDeviceReaders
+import com.jkteknologies.resourceradar.data.SharedPreferencesThemeStore
+import com.jkteknologies.resourceradar.data.SharedPreferencesRefreshModeStore
+import com.jkteknologies.resourceradar.ui.AnalyzerApp
+import com.jkteknologies.resourceradar.ui.details.DetailsScreen
+import com.jkteknologies.resourceradar.ui.details.DetailsStateHolder
+import com.jkteknologies.resourceradar.ui.home.HomeScreen
+import com.jkteknologies.resourceradar.ui.home.HomeStateHolder
+import com.jkteknologies.resourceradar.ui.settings.SettingsScreen
+import com.jkteknologies.resourceradar.ui.theme.AppTheme
 
 /**
  * Sole Activity (single manifest component): hosts the app shell under

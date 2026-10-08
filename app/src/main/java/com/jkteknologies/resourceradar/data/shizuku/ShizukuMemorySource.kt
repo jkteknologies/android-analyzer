@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.data.shizuku
+package com.jkteknologies.resourceradar.data.shizuku
 
 import android.content.ComponentName
 import android.content.Context
@@ -8,8 +8,8 @@ import android.os.IBinder
 import android.os.Looper
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import com.jkteknologies.androidanalyzer.data.AppMemoryReader
-import com.jkteknologies.androidanalyzer.domain.aggregateProcessMemory
+import com.jkteknologies.resourceradar.data.AppMemoryReader
+import com.jkteknologies.resourceradar.domain.aggregateProcessMemory
 import rikka.shizuku.Shizuku
 
 /**

@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 import java.text.Collator
 

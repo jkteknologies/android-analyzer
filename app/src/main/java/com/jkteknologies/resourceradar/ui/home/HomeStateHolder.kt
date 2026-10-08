@@ -1,21 +1,21 @@
-package com.jkteknologies.androidanalyzer.ui.home
+package com.jkteknologies.resourceradar.ui.home
 
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.jkteknologies.androidanalyzer.data.ApplicationCounter
-import com.jkteknologies.androidanalyzer.data.BatteryReader
-import com.jkteknologies.androidanalyzer.data.CoreTierReader
-import com.jkteknologies.androidanalyzer.data.MemoryReader
-import com.jkteknologies.androidanalyzer.data.StorageReader
-import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
-import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreTiers
-import com.jkteknologies.androidanalyzer.domain.FigureUiState
-import com.jkteknologies.androidanalyzer.domain.MemoryReading
-import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.resourceradar.data.ApplicationCounter
+import com.jkteknologies.resourceradar.data.BatteryReader
+import com.jkteknologies.resourceradar.data.CoreTierReader
+import com.jkteknologies.resourceradar.data.MemoryReader
+import com.jkteknologies.resourceradar.data.StorageReader
+import com.jkteknologies.resourceradar.domain.ApplicationInventory
+import com.jkteknologies.resourceradar.domain.BatteryReading
+import com.jkteknologies.resourceradar.domain.CoreTiers
+import com.jkteknologies.resourceradar.domain.FigureUiState
+import com.jkteknologies.resourceradar.domain.MemoryReading
+import com.jkteknologies.resourceradar.domain.StorageReading
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

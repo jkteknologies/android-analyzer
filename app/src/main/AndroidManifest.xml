@@ -41,7 +41,7 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AndroidAnalyzer">
+        android:theme="@style/Theme.ResourceRadar">
 
         <!-- Sole declared component: exported launcher Activity (US1). -->
         <activity

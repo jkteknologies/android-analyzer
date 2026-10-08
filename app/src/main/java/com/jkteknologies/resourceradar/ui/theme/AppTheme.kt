@@ -1,13 +1,13 @@
-package com.jkteknologies.androidanalyzer.ui.theme
+package com.jkteknologies.resourceradar.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import com.jkteknologies.androidanalyzer.domain.EffectiveTheme
-import com.jkteknologies.androidanalyzer.domain.ThemePreference
-import com.jkteknologies.androidanalyzer.domain.effectiveTheme
+import com.jkteknologies.resourceradar.domain.EffectiveTheme
+import com.jkteknologies.resourceradar.domain.ThemePreference
+import com.jkteknologies.resourceradar.domain.effectiveTheme
 
 /**
  * App-wide theming (task T020; ui-contracts T-1..T-4): static Material 3

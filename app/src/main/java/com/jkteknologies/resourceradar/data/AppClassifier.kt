@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.data
+package com.jkteknologies.resourceradar.data
 
 import android.content.pm.ApplicationInfo
 

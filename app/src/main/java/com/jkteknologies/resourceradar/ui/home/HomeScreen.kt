@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.ui.home
+package com.jkteknologies.resourceradar.ui.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.jkteknologies.androidanalyzer.R
-import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
-import com.jkteknologies.androidanalyzer.domain.FigureUiState
+import com.jkteknologies.resourceradar.R
+import com.jkteknologies.resourceradar.domain.AppCategoryFilter
+import com.jkteknologies.resourceradar.domain.FigureUiState
 
 /**
  * The device-overview home screen (002 ui-contracts H-1..H-9; 004 H-1/H-2).

@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 /**
  * Pure domain models for the home-screen figures (specs/002-home-screen/

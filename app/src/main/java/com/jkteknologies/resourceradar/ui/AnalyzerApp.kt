@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.ui
+package com.jkteknologies.resourceradar.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -25,10 +28,11 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
-import com.jkteknologies.androidanalyzer.domain.RefreshMode
-import com.jkteknologies.androidanalyzer.R
+import com.jkteknologies.resourceradar.domain.AppCategoryFilter
+import com.jkteknologies.resourceradar.domain.RefreshMode
+import com.jkteknologies.resourceradar.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * The three destinations of the hand-rolled shell (004 data-model §8, R-05):
@@ -74,6 +78,19 @@ fun AnalyzerApp(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     /**
+     * The shared link-failure surface (006 FR-016, contracts L-3): one
+     * Scaffold-owned snackbar; a failed link open shows a single transient,
+     * auto-dismissing message — no dialog, no crash. Screens receive
+     * [onLinkUnavailable] instead of a host so the message stays in one place.
+     */
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val linkUnavailableMessage = stringResource(R.string.link_unavailable)
+    val onLinkUnavailable = {
+        scope.launch { snackbarHostState.showSnackbar(linkUnavailableMessage) }
+    }
+
+    /**
      * The auto-refresh ticker (T-1..T-5, FR-014..FR-017): one shell-owned
      * loop that sleeps the interval and refreshes the **visible** screen only
      * (SETTINGS → nothing). `repeatOnLifecycle(RESUMED)` gates it on
@@ -102,6 +119,7 @@ fun AnalyzerApp(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = { FooterBar(destination = destination, onNavigate = { destination = it }) },
     ) { innerPadding ->
         Box(

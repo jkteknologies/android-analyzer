@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.ui.settings
+package com.jkteknologies.resourceradar.ui.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,9 +21,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.jkteknologies.androidanalyzer.R
-import com.jkteknologies.androidanalyzer.domain.RefreshMode
-import com.jkteknologies.androidanalyzer.domain.ThemePreference
+import com.jkteknologies.resourceradar.R
+import com.jkteknologies.resourceradar.domain.RefreshMode
+import com.jkteknologies.resourceradar.domain.ThemePreference
 
 /**
  * The settings screen (002 S-1..S-6; 004 contracts/refresh-mode.md S-1..S-4):

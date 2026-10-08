@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 /**
  * One processor core tier: the logical cores sharing a distinct maximum

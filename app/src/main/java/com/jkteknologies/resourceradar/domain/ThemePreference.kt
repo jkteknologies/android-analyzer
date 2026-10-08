@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 /**
  * The single persisted user preference: theme selection (data-model §4).

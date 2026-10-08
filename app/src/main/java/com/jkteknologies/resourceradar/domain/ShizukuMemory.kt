@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 /**
  * The Shizuku access ladder's value (005 FR-004 plus the spec's Outdated edge

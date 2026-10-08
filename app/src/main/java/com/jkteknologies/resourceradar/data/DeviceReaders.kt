@@ -1,15 +1,15 @@
-package com.jkteknologies.androidanalyzer.data
+package com.jkteknologies.resourceradar.data
 
-import com.jkteknologies.androidanalyzer.domain.AppInventory
-import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
-import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreCount
-import com.jkteknologies.androidanalyzer.domain.CoreTiers
-import com.jkteknologies.androidanalyzer.domain.MemoryReading
-import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
-import com.jkteknologies.androidanalyzer.domain.StorageReading
-import com.jkteknologies.androidanalyzer.domain.RefreshMode
-import com.jkteknologies.androidanalyzer.domain.ThemePreference
+import com.jkteknologies.resourceradar.domain.AppInventory
+import com.jkteknologies.resourceradar.domain.ApplicationInventory
+import com.jkteknologies.resourceradar.domain.BatteryReading
+import com.jkteknologies.resourceradar.domain.CoreCount
+import com.jkteknologies.resourceradar.domain.CoreTiers
+import com.jkteknologies.resourceradar.domain.MemoryReading
+import com.jkteknologies.resourceradar.domain.ShizukuAccessState
+import com.jkteknologies.resourceradar.domain.StorageReading
+import com.jkteknologies.resourceradar.domain.RefreshMode
+import com.jkteknologies.resourceradar.domain.ThemePreference
 
 /**
  * The app's only seam between the UI/state layer and the Android platform

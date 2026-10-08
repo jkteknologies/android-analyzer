@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.ui.details
+package com.jkteknologies.resourceradar.ui.details
 
 import android.content.Intent
 import android.net.Uri
@@ -45,13 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.jkteknologies.androidanalyzer.R
-import com.jkteknologies.androidanalyzer.data.shizuku.ShizukuAccess
-import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
-import com.jkteknologies.androidanalyzer.domain.AppClassification
-import com.jkteknologies.androidanalyzer.domain.FigureUiState
-import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
-import com.jkteknologies.androidanalyzer.domain.InstalledApp
+import com.jkteknologies.resourceradar.R
+import com.jkteknologies.resourceradar.data.shizuku.ShizukuAccess
+import com.jkteknologies.resourceradar.domain.AppCategoryFilter
+import com.jkteknologies.resourceradar.domain.AppClassification
+import com.jkteknologies.resourceradar.domain.FigureUiState
+import com.jkteknologies.resourceradar.domain.ShizukuAccessState
+import com.jkteknologies.resourceradar.domain.InstalledApp
 
 /**
  * The per-application Details screen (004 contracts/details-screen.md

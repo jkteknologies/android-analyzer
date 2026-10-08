@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -11,7 +11,7 @@ import org.junit.Test
  * Pure JVM — the domain layer must not import Android (plan.md Project Structure).
  * V-1's runtime half (any → Loading on cycle start; terminal Available/Unavailable
  * until the next cycle) is enforced by the home state holder and covered by
- * [com.jkteknologies.androidanalyzer.ui.home.HomeStateHolderTest]; here the
+ * [com.jkteknologies.resourceradar.ui.home.HomeStateHolderTest]; here the
  * three-state surface itself is pinned.
  */
 class FiguresTest {

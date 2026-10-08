@@ -1,8 +1,8 @@
-package com.jkteknologies.androidanalyzer.data
+package com.jkteknologies.resourceradar.data
 
 import android.content.Context
-import com.jkteknologies.androidanalyzer.domain.RefreshMode
-import com.jkteknologies.androidanalyzer.domain.fromPersisted
+import com.jkteknologies.resourceradar.domain.RefreshMode
+import com.jkteknologies.resourceradar.domain.fromPersisted
 
 /**
  * [RefreshModeStore] over `SharedPreferences` (004 R-09): the existing

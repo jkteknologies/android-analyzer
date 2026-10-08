@@ -1,18 +1,18 @@
-package com.jkteknologies.androidanalyzer.ui.details
+package com.jkteknologies.resourceradar.ui.details
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.jkteknologies.androidanalyzer.data.InstalledAppReader
-import com.jkteknologies.androidanalyzer.data.ShizukuAccessStatus
-import com.jkteknologies.androidanalyzer.data.ShizukuAuthorizer
-import com.jkteknologies.androidanalyzer.data.ShizukuChangeSource
-import com.jkteknologies.androidanalyzer.data.UsageAccessStatus
-import com.jkteknologies.androidanalyzer.domain.AppCategoryFilter
-import com.jkteknologies.androidanalyzer.domain.AppInventory
-import com.jkteknologies.androidanalyzer.domain.FigureUiState
-import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
-import com.jkteknologies.androidanalyzer.ui.home.ResultPoster
+import com.jkteknologies.resourceradar.data.InstalledAppReader
+import com.jkteknologies.resourceradar.data.ShizukuAccessStatus
+import com.jkteknologies.resourceradar.data.ShizukuAuthorizer
+import com.jkteknologies.resourceradar.data.ShizukuChangeSource
+import com.jkteknologies.resourceradar.data.UsageAccessStatus
+import com.jkteknologies.resourceradar.domain.AppCategoryFilter
+import com.jkteknologies.resourceradar.domain.AppInventory
+import com.jkteknologies.resourceradar.domain.FigureUiState
+import com.jkteknologies.resourceradar.domain.ShizukuAccessState
+import com.jkteknologies.resourceradar.ui.home.ResultPoster
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

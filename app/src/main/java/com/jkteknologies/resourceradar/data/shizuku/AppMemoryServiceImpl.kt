@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.data.shizuku
+package com.jkteknologies.resourceradar.data.shizuku
 
 import android.app.ActivityManager
 import android.content.Context

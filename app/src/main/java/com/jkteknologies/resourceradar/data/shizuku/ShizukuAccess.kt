@@ -1,11 +1,11 @@
-package com.jkteknologies.androidanalyzer.data.shizuku
+package com.jkteknologies.resourceradar.data.shizuku
 
 import android.content.Context
 import android.content.pm.PackageManager
-import com.jkteknologies.androidanalyzer.data.ShizukuAccessStatus
-import com.jkteknologies.androidanalyzer.data.ShizukuAuthorizer
-import com.jkteknologies.androidanalyzer.data.ShizukuChangeSource
-import com.jkteknologies.androidanalyzer.domain.ShizukuAccessState
+import com.jkteknologies.resourceradar.data.ShizukuAccessStatus
+import com.jkteknologies.resourceradar.data.ShizukuAuthorizer
+import com.jkteknologies.resourceradar.data.ShizukuChangeSource
+import com.jkteknologies.resourceradar.domain.ShizukuAccessState
 import rikka.shizuku.Shizuku
 
 /**

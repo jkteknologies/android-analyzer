@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 /**
  * The persisted automatic-refresh selection (004 FR-014/FR-015, data-model

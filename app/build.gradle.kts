@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jkteknologies.androidanalyzer"
+    namespace = "com.jkteknologies.resourceradar"
     // compileSdk 37 (not 35 as originally pinned): the pinned 2026 library set
     // (Compose 1.12.x via BOM 2026.09.00, lifecycle 2.11.0, activity 1.13.0)
     // requires compiling against SDK 37+. minSdk/targetSdk stay 35 — the
@@ -12,7 +12,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.jkteknologies.androidanalyzer"
+        applicationId = "com.jkteknologies.resourceradar"
         minSdk = 35
         targetSdk = 35
         versionCode = 1

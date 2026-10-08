@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.ui.home
+package com.jkteknologies.resourceradar.ui.home
 
 import android.text.format.Formatter
 import androidx.compose.runtime.Composable
@@ -6,12 +6,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.jkteknologies.androidanalyzer.R
-import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
-import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreTiers
-import com.jkteknologies.androidanalyzer.domain.MemoryReading
-import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.resourceradar.R
+import com.jkteknologies.resourceradar.domain.ApplicationInventory
+import com.jkteknologies.resourceradar.domain.BatteryReading
+import com.jkteknologies.resourceradar.domain.CoreTiers
+import com.jkteknologies.resourceradar.domain.MemoryReading
+import com.jkteknologies.resourceradar.domain.StorageReading
 import java.text.NumberFormat
 import java.util.Locale
 

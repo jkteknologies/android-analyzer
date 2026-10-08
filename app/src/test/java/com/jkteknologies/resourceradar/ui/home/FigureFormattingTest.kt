@@ -1,11 +1,11 @@
-package com.jkteknologies.androidanalyzer.ui.home
+package com.jkteknologies.resourceradar.ui.home
 
-import com.jkteknologies.androidanalyzer.domain.ApplicationInventory
-import com.jkteknologies.androidanalyzer.domain.BatteryReading
-import com.jkteknologies.androidanalyzer.domain.CoreTier
-import com.jkteknologies.androidanalyzer.domain.CoreTiers
-import com.jkteknologies.androidanalyzer.domain.MemoryReading
-import com.jkteknologies.androidanalyzer.domain.StorageReading
+import com.jkteknologies.resourceradar.domain.ApplicationInventory
+import com.jkteknologies.resourceradar.domain.BatteryReading
+import com.jkteknologies.resourceradar.domain.CoreTier
+import com.jkteknologies.resourceradar.domain.CoreTiers
+import com.jkteknologies.resourceradar.domain.MemoryReading
+import com.jkteknologies.resourceradar.domain.StorageReading
 import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Test

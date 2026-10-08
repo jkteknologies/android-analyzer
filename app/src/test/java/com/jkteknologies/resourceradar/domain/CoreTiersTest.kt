@@ -1,4 +1,4 @@
-package com.jkteknologies.androidanalyzer.domain
+package com.jkteknologies.resourceradar.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
