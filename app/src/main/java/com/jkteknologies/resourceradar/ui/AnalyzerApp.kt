@@ -95,10 +95,10 @@ fun AnalyzerApp(
 
     /**
      * The Home → Details arrival directive (H-3, FR-012): set together with
-     * `destination = DETAILS` by a Home entry tap, applied once by the
+     * `navigate(Destination.DETAILS)` by a Home entry tap, applied once by the
      * details slot via `applyPendingFilter` — overriding any previously
      * chosen filter — then cleared. `null` means "no directive": plain tab
-     * switches never touch the filter.
+     * switches and swipes never touch the filter.
      */
     var pendingDetailsFilter by remember { mutableStateOf<AppCategoryFilter?>(null) }
 
