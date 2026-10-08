@@ -6,5 +6,5 @@
       no AppCompat bridge, no compat shims (U-3), and no Material Components XML
       library dependency (Constitution VII minimal dependency set).
     -->
-    <style name="Theme.AndroidAnalyzer" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ResourceRadar" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

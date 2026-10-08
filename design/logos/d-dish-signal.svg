@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Concept D "Dish & Signal": side-view dish beaming toward a blip -->
+  <rect width="512" height="512" rx="112" fill="#0D0D0F"/>
+  <rect x="10" y="10" width="492" height="492" rx="104" fill="none" stroke="#E53935" stroke-opacity="0.25" stroke-width="3"/>
+  <!-- signal arcs centered on the feed point (312,206) -->
+  <g fill="none" stroke="#E53935" stroke-linecap="round">
+    <path d="M423.2,192.4 A112,112 0 0 0 325.6,94.8" stroke-width="14" stroke-opacity="0.9"/>
+    <path d="M389.4,196.5 A78,78 0 0 0 321.5,128.6" stroke-width="12" stroke-opacity="0.6"/>
+    <path d="M355.7,200.6 A44,44 0 0 0 317.4,162.3" stroke-width="10" stroke-opacity="0.35"/>
+  </g>
+  <!-- dish arc (opposite side of the feed) + feed strut -->
+  <path d="M164.3,232 A150,150 0 0 0 286,353.7" fill="none" stroke="#E53935" stroke-width="22" stroke-linecap="round"/>
+  <line x1="206" y1="312" x2="312" y2="206" stroke="#E53935" stroke-opacity="0.7" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="312" cy="206" r="13" fill="#FF5252"/>
+  <!-- target blip at the end of the beam -->
+  <circle cx="418" cy="100" r="18" fill="none" stroke="#FF5252" stroke-opacity="0.35" stroke-width="5"/>
+  <circle cx="418" cy="100" r="10" fill="#FF5252"/>
+</svg>

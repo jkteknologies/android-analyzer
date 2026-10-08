@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive-icon monochrome layer (006 FR-004, R-06): the b-blip-bars artwork
+  as one flat white shape for Android 13+ themed icons. Same geometry as
+  ic_launcher_foreground; the gradient sweep becomes a flat low-alpha wedge.
+  A gradient layer would tint as an opaque blob — themed icons tint by the
+  alpha mask, so only flat fills with a deliberate alpha ramp survive.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="6.64"
+        android:translateY="6.64"
+        android:scaleX="0.185"
+        android:scaleY="0.185">
+        <!-- Sweep wedge, flattened -->
+        <path
+            android:fillColor="#40FFFFFF"
+            android:pathData="M256,256 L256,86 A170,170 0 0 1 415.7,197.9 Z" />
+        <!-- Radar ring -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="10"
+            android:pathData="M86,256 a170,170 0 1 0 340,0 a170,170 0 1 0 -340,0" />
+        <!-- Bars, ascending alpha 35% / 55% / 75% / 100% -->
+        <path
+            android:fillColor="#59FFFFFF"
+            android:pathData="M171,270 L185,270 A10,10 0 0 1 195,280 L195,334 A10,10 0 0 1 185,344 L171,344 A10,10 0 0 1 161,334 L161,280 A10,10 0 0 1 171,270 Z" />
+        <path
+            android:fillColor="#8CFFFFFF"
+            android:pathData="M223,230 L237,230 A10,10 0 0 1 247,240 L247,334 A10,10 0 0 1 237,344 L223,344 A10,10 0 0 1 213,334 L213,240 A10,10 0 0 1 223,230 Z" />
+        <path
+            android:fillColor="#BFFFFFFF"
+            android:pathData="M275,186 L289,186 A10,10 0 0 1 299,196 L299,334 A10,10 0 0 1 289,344 L275,344 A10,10 0 0 1 265,334 L265,196 A10,10 0 0 1 275,186 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M327,136 L341,136 A10,10 0 0 1 351,146 L351,334 A10,10 0 0 1 341,344 L327,344 A10,10 0 0 1 317,334 L317,146 A10,10 0 0 1 327,136 Z" />
+        <!-- Baseline -->
+        <path
+            android:strokeColor="#80FFFFFF"
+            android:strokeWidth="6"
+            android:strokeLineCap="round"
+            android:pathData="M146,348 L366,348" />
+        <!-- Blip: outer ring + dot -->
+        <path
+            android:strokeColor="#59FFFFFF"
+            android:strokeWidth="5"
+            android:pathData="M307.8,101.9 a20,20 0 1 0 40,0 a20,20 0 1 0 -40,0" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M317.8,101.9 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0" />
+    </group>
+</vector>

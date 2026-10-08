@@ -4,7 +4,7 @@
       Footer/theme strings stay unused until US3/US4 land — an interim
       unused-resource lint warning is acceptable (warnings never fail the build).
     -->
-    <string name="app_name">Android Analyzer</string>
+    <string name="app_name">Resource Radar</string>
 
     <!-- Home screen figure labels (FR-001/FR-003; 004 FR-011 splits Applications) -->
     <string name="figure_memory">Memory</string>
@@ -72,11 +72,34 @@
 
     <!-- Shizuku guidance (005 R-09, contracts/details-guidance.md §S): one row
          on Details naming the current state; a button only where an action exists -->
-    <string name="shizuku_hint_not_installed">Per-app memory needs the free Shizuku app (shizuku.rikka.app). Install it, start it, then allow Android Analyzer there.</string>
+    <string name="shizuku_hint_not_installed_prefix">Per-app memory needs the free Shizuku app (</string>
+    <string name="shizuku_hint_not_installed_url">shizuku.rikka.app</string>
+    <string name="shizuku_hint_not_installed_suffix">). Install it, start it, then allow Resource Radar there.</string>
     <string name="shizuku_hint_outdated">Shizuku is too old for per-app memory. Update Shizuku, then return here.</string>
     <string name="shizuku_hint_not_running">Shizuku is not running. Start it, then return here.</string>
-    <string name="shizuku_hint_awaiting">Allow Android Analyzer in Shizuku to see per-app memory.</string>
+    <string name="shizuku_hint_awaiting">Allow Resource Radar in Shizuku to see per-app memory.</string>
     <string name="shizuku_hint_authorized">Per-app memory via Shizuku.</string>
     <string name="shizuku_open">Open Shizuku</string>
     <string name="shizuku_allow">Allow access</string>
+
+    <!-- Link opening (006 FR-016, contracts L-3): graceful failure when no
+         browser/handler exists — one auto-dismissing snackbar, no dialog. -->
+    <string name="link_unavailable">Couldn\'t find an app to open this link.</string>
+
+    <!-- Help screen (006 FR-006..FR-012, contracts N-1): five titled sections
+         in spec order — About, Limitations, Per-app memory, Contacts, License.
+         English only (spec Assumption). -->
+    <string name="help_title_about">About</string>
+    <string name="help_title_limitations">Limitations</string>
+    <string name="help_title_per_app_memory">Per-app memory</string>
+    <string name="help_title_contacts">Contacts</string>
+    <string name="help_title_license">License</string>
+    <string name="help_about">Resource Radar shows an overview of your device\'s resources — memory, internal storage, battery, and processor — plus details for every installed application. Per-app memory figures are provided through the Shizuku app.</string>
+    <string name="help_limitations">Per-app memory needs the Shizuku app, and storage figures need the usage-access grant. All figures are estimates reported by the operating system — useful for orientation, not forensics.</string>
+    <string name="help_per_app_memory">Install and start the free Shizuku app (shizuku.rikka.app), allow Resource Radar access in it, then open an application\'s details to see its memory usage.</string>
+    <string name="contact_linkedin">Jurijs Kolomijecs on LinkedIn</string>
+    <string name="contact_website">jkteknologies.com</string>
+
+    <!-- Footer navigation, fourth destination (006 FR-006, N-1) -->
+    <string name="footer_help">Help</string>
 </resources>
