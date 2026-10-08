@@ -183,3 +183,9 @@ Strictly sequential T001 → T021 in ID order is correct and simplest; the [P] m
 - Commit after each story checkpoint (Constitution V: gates green before presenting).
 - No task may add a dependency or a manifest permission — research R-01..R-09 fixed both at zero.
 - `tasks.md` checkboxes are updated by `$speckit-implement` as work completes.
+
+---
+
+## Phase 9: Convergence
+
+- [ ] T022 Update the `pendingDetailsFilter` KDoc in `app/src/main/java/com/jkteknologies/resourceradar/ui/AnalyzerApp.kt` to describe the current mechanism — the Home entry tap sets it together with `navigate(Destination.DETAILS)` (pager animation), not the removed `destination = DETAILS` direct write — per plan: R-01 (partial)
