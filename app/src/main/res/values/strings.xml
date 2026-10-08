@@ -72,7 +72,9 @@
 
     <!-- Shizuku guidance (005 R-09, contracts/details-guidance.md §S): one row
          on Details naming the current state; a button only where an action exists -->
-    <string name="shizuku_hint_not_installed">Per-app memory needs the free Shizuku app (shizuku.rikka.app). Install it, start it, then allow Resource Radar there.</string>
+    <string name="shizuku_hint_not_installed_prefix">Per-app memory needs the free Shizuku app (</string>
+    <string name="shizuku_hint_not_installed_url">shizuku.rikka.app</string>
+    <string name="shizuku_hint_not_installed_suffix">). Install it, start it, then allow Resource Radar there.</string>
     <string name="shizuku_hint_outdated">Shizuku is too old for per-app memory. Update Shizuku, then return here.</string>
     <string name="shizuku_hint_not_running">Shizuku is not running. Start it, then return here.</string>
     <string name="shizuku_hint_awaiting">Allow Resource Radar in Shizuku to see per-app memory.</string>

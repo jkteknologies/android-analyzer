@@ -41,6 +41,13 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -52,6 +59,10 @@ import com.jkteknologies.resourceradar.domain.AppClassification
 import com.jkteknologies.resourceradar.domain.FigureUiState
 import com.jkteknologies.resourceradar.domain.ShizukuAccessState
 import com.jkteknologies.resourceradar.domain.InstalledApp
+import com.jkteknologies.resourceradar.ui.openUrl
+
+/** Fixed Shizuku site target (006 FR-005, contracts L-1). */
+private const val SHIZUKU_URL = "https://shizuku.rikka.app"
 
 /**
  * The per-application Details screen (004 contracts/details-screen.md
@@ -70,9 +81,19 @@ import com.jkteknologies.resourceradar.domain.InstalledApp
  * and lifecycle triggers mirror Home: `ON_RESUME` and entering composition
  * while resumed start the presentation cycle; dispose shuts the executor
  * down (P-3). Sp-scaled text, wrapping rows, no fixed heights.
+ *
+ * 006 (FR-005, contracts L-1/L-2): in the NOT_INSTALLED hint the Shizuku
+ * website address is a `LinkAnnotation.Url` on the address segment; opening
+ * runs the shared opener, and a missing handler surfaces the shell's
+ * auto-dismissing snackbar via [onLinkUnavailable] instead of crashing
+ * (FR-016). Other hint states stay plain text.
  */
 @Composable
-fun DetailsScreen(holder: DetailsStateHolder, modifier: Modifier = Modifier) {
+fun DetailsScreen(
+    holder: DetailsStateHolder,
+    onLinkUnavailable: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner, holder) {
@@ -178,6 +199,7 @@ fun DetailsScreen(holder: DetailsStateHolder, modifier: Modifier = Modifier) {
                     state = state,
                     onOpenShizuku = openShizuku,
                     onRequestAuthorization = holder::requestAuthorization,
+                    onLinkUnavailable = onLinkUnavailable,
                 )
             }
             FilterRow(holder)
@@ -281,6 +303,7 @@ private fun ShizukuGuidanceRow(
     state: ShizukuAccessState,
     onOpenShizuku: () -> Unit,
     onRequestAuthorization: () -> Unit,
+    onLinkUnavailable: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -290,7 +313,7 @@ private fun ShizukuGuidanceRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = guidanceText(state),
+            text = guidanceText(state, onLinkUnavailable),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
@@ -309,16 +332,44 @@ private fun ShizukuGuidanceRow(
     }
 }
 
+/**
+ * The guidance-row text (005 R-09). NOT_INSTALLED composes the
+ * prefix/URL/suffix resources into an [AnnotatedString] with the address as
+ * a `LinkAnnotation.Url` (006 R-04) styled from the theme; tapping runs the
+ * shared opener — failure calls [onLinkUnavailable] (FR-016, L-3). Every
+ * other state stays plain text.
+ */
 @Composable
-private fun guidanceText(state: ShizukuAccessState): String = stringResource(
-    when (state) {
-        ShizukuAccessState.NOT_INSTALLED -> R.string.shizuku_hint_not_installed
-        ShizukuAccessState.NOT_RUNNING -> R.string.shizuku_hint_not_running
-        ShizukuAccessState.OUTDATED -> R.string.shizuku_hint_outdated
-        ShizukuAccessState.AWAITING_AUTHORIZATION -> R.string.shizuku_hint_awaiting
-        ShizukuAccessState.AUTHORIZED -> R.string.shizuku_hint_authorized
-    },
-)
+private fun guidanceText(
+    state: ShizukuAccessState,
+    onLinkUnavailable: () -> Unit,
+): AnnotatedString {
+    val context = LocalContext.current
+    return when (state) {
+        ShizukuAccessState.NOT_INSTALLED -> buildAnnotatedString {
+            append(stringResource(R.string.shizuku_hint_not_installed_prefix))
+            withLink(
+                LinkAnnotation.Url(
+                    url = SHIZUKU_URL,
+                    styles = TextLinkStyles(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                    ),
+                    linkInteractionListener = {
+                        if (!openUrl(context, SHIZUKU_URL)) onLinkUnavailable()
+                    },
+                ),
+            ) { append(stringResource(R.string.shizuku_hint_not_installed_url)) }
+            append(stringResource(R.string.shizuku_hint_not_installed_suffix))
+        }
+        ShizukuAccessState.NOT_RUNNING -> AnnotatedString(stringResource(R.string.shizuku_hint_not_running))
+        ShizukuAccessState.OUTDATED -> AnnotatedString(stringResource(R.string.shizuku_hint_outdated))
+        ShizukuAccessState.AWAITING_AUTHORIZATION -> AnnotatedString(stringResource(R.string.shizuku_hint_awaiting))
+        ShizukuAccessState.AUTHORIZED -> AnnotatedString(stringResource(R.string.shizuku_hint_authorized))
+    }
+}
 
 /** The three-option single-select filter above the list (D-2, FR-005). */
 @Composable

@@ -65,7 +65,7 @@ fun AnalyzerApp(
     refreshHome: () -> Unit,
     refreshDetails: () -> Unit,
     home: @Composable (onOpenApplications: (AppCategoryFilter) -> Unit) -> Unit,
-    details: @Composable (pendingFilter: AppCategoryFilter?, onPendingFilterConsumed: () -> Unit) -> Unit,
+    details: @Composable (pendingFilter: AppCategoryFilter?, onPendingFilterConsumed: () -> Unit, onLinkUnavailable: () -> Unit) -> Unit,
     settings: @Composable () -> Unit,
     help: @Composable (onLinkUnavailable: () -> Unit) -> Unit,
 ) {
@@ -138,7 +138,7 @@ fun AnalyzerApp(
                     pendingDetailsFilter = filter
                     destination = Destination.DETAILS
                 }
-                Destination.DETAILS -> details(pendingDetailsFilter) { pendingDetailsFilter = null }
+                Destination.DETAILS -> details(pendingDetailsFilter, onLinkUnavailable) { pendingDetailsFilter = null }
                 Destination.SETTINGS -> settings()
                 Destination.HELP -> help(onLinkUnavailable)
             }

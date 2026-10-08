@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     home = { onOpenApplications ->
                         HomeScreen(holder, onOpenApplications)
                     },
-                    details = { pendingFilter, onPendingFilterConsumed ->
+                    details = { pendingFilter, onPendingFilterConsumed, onLinkUnavailable ->
                         // H-3 consumption: apply the arrival directive synchronously
                         // before the screen composes — no full-list flash on arrival —
                         // then clear the shell slot (once). Plain recomposition with a
@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                             detailsHolder.applyPendingFilter(it)
                             onPendingFilterConsumed()
                         }
-                        DetailsScreen(detailsHolder)
+                        DetailsScreen(detailsHolder, onLinkUnavailable)
                     },
                     settings = {
                         SettingsScreen(

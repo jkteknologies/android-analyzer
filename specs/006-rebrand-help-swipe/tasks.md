@@ -105,8 +105,8 @@ Single Gradle module: `app/src/main/java|aidl|res/`, `app/src/test/java/`, docs 
 
 ### Implementation for User Story 4
 
-- [ ] T016 [US4] Split `shizuku_hint_not_installed` in `app/src/main/res/values/strings.xml` into prefix / URL / suffix resources so the visible wording is unchanged except the rebrand (T005) — the URL text itself becomes the link anchor (research R-04).
-- [ ] T017 [US4] In `app/src/main/java/com/jkteknologies/resourceradar/ui/details/DetailsScreen.kt`, render the NOT_INSTALLED guidance text as an `AnnotatedString` with a `LinkAnnotation.Url` on the address segment (`TextLinkStyles` from the theme), whose interaction listener calls T002's opener (failure → `onLinkUnavailable`, FR-016). Thread `onLinkUnavailable` from `AnalyzerApp`'s details slot. Other hint states remain plain text.
+- [X] T016 [US4] Split `shizuku_hint_not_installed` in `app/src/main/res/values/strings.xml` into prefix / URL / suffix resources so the visible wording is unchanged except the rebrand (T005) — the URL text itself becomes the link anchor (research R-04).
+- [X] T017 [US4] In `app/src/main/java/com/jkteknologies/resourceradar/ui/details/DetailsScreen.kt`, render the NOT_INSTALLED guidance text as an `AnnotatedString` with a `LinkAnnotation.Url` on the address segment (`TextLinkStyles` from the theme), whose interaction listener calls T002's opener (failure → `onLinkUnavailable`, FR-016). Thread `onLinkUnavailable` from `AnalyzerApp`'s details slot. Other hint states remain plain text.
 
 **Checkpoint**: Suite + lint green; the FR-005 behavior is device-verified via M-8.
 
